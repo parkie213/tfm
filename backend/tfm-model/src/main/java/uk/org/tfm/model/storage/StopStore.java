@@ -1,6 +1,7 @@
 package uk.org.tfm.model.storage;
 
 import java.util.List;
+import uk.org.tfm.model.catalog.NearbyStopPage;
 import uk.org.tfm.model.catalog.RankedStop;
 import uk.org.tfm.model.catalog.StopDefinition;
 import uk.org.tfm.model.catalog.StopPage;
@@ -11,6 +12,9 @@ public interface StopStore extends StopCountSource {
   int SEARCH_MAX_LIMIT = 50;
 
   StopPage inViewport(double minLat, double minLng, double maxLat, double maxLng)
+      throws StorageException;
+
+  NearbyStopPage nearby(double lat, double lng, double radiusM, int limit, boolean busOnly)
       throws StorageException;
 
   List<RankedStop> search(String query, int limit) throws StorageException;

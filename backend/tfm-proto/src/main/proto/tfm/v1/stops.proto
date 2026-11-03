@@ -32,6 +32,7 @@ message GetStopsInViewportResponse {
   repeated Stop stops = 1;
   // true if the result was capped (zoom in for the rest).
   bool truncated = 2;
+
 }
 
 message SearchStopsRequest {
@@ -61,4 +62,22 @@ message SearchItem {
 message SearchStopsResponse {
   // Results in final display order — highest rank first. Mix of stops and places.
   repeated SearchItem items = 1;
+}
+
+message GetNearbyStopsRequest {
+  double lat = 1;
+  double lng = 2;
+  // 0 = 800 m; otherwise positive and at most 5000 m. Straight-line geography distance.
+  double radius_m = 3;
+  // 0 = 100; maximum 500. Limit applies after radius/type filtering and distance ordering.
+  int32 limit = 4;
+  bool bus_only = 5;
+}
+message NearbyStop {
+  Stop stop = 1;
+  double distance_m = 2;
+}
+message GetNearbyStopsResponse {
+  repeated NearbyStop stops = 1; // distance ascending, ATCO code breaks ties
+  bool truncated = 2;
 }

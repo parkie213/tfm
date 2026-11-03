@@ -59,6 +59,10 @@ service TfmService {
   // may be empty or stale. Returns UNIMPLEMENTED when live buses are not configured.
   rpc GetBusVehicles(GetBusVehiclesRequest) returns (GetBusVehiclesResponse);
 
+  // Nearby active bus/rail/metro stops; distance filtering precedes the result cap.
+  // Invalid/non-finite coordinates, radius or limit return INVALID_ARGUMENT; storage failures UNAVAILABLE.
+  rpc GetNearbyStops(GetNearbyStopsRequest) returns (GetNearbyStopsResponse);
+
   // Returns catalogue stops inside the bounding box, with truncated=true if capped.
   // Returns INVALID_ARGUMENT for reversed, empty, or out-of-range bounds, and UNAVAILABLE
   // on a catalogue query failure.

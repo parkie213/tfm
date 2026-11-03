@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { Stop } from '../proto/tfm/v1/stops_pb'
 import type { ShopLocation } from '../hooks/useShopLocation'
-import { metresBetween, useNearbyStops } from '../hooks/useTownCentreBuses'
+import { useNearbyStops } from '../hooks/useTownCentreBuses'
 import styles from '../pages/TVView.module.css'
 
 /** The venue chooses its boarding stops; proximity supplies candidates, not an automatic group. */
@@ -40,13 +40,13 @@ export function KioskStopPicker({ location, selected, onSave, onCancel, onChange
         <div className={styles.stopChoices}>
           {candidates.map((stop) => {
             const checked = chosen.includes(stop.atcoCode)
-            const distance = Math.round(metresBetween(location.lat, location.lng, stop.lat, stop.lng))
+            const distance = nearby.distances.get(stop.atcoCode)
             return (
               <label className={styles.stopChoice} key={stop.atcoCode}>
                 <input type="checkbox" checked={checked} disabled={!checked && chosen.length >= 10}
                   onChange={() => toggle(stop.atcoCode)} />
                 <span><strong>{stop.name}</strong>
-                  <span className={styles.stopDetail}>{stop.indicator || stop.atcoCode} · {distance} m away</span>
+                  <span className={styles.stopDetail}>{stop.indicator || stop.atcoCode} · {distance === undefined ? 'Saved stop' : `${Math.round(distance)} m away`}</span>
                 </span>
               </label>
             )

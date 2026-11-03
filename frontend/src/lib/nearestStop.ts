@@ -1,5 +1,4 @@
 import { client } from '../transport'
-import { metresBetween } from '../hooks/useTownCentreBuses'
 import type { Stop } from '../proto/tfm/v1/stops_pb'
 import type { SelectedStop } from '../App'
 
@@ -17,40 +16,13 @@ export async function findNearbyStops(
   lng: number,
   { radiusM = NEAREST_RADIUS_M, limit = 8 }: { radiusM?: number; limit?: number } = {},
 ): Promise<NearbyStop[]> {
-  const dLat = radiusM / 111_320
-  const dLng = radiusM / (111_320 * Math.cos((lat * Math.PI) / 180))
-  const res = await client.getStopsInViewport({
-    minLat: lat - dLat,
-    minLng: lng - dLng,
-    maxLat: lat + dLat,
-    maxLng: lng + dLng,
-  })
-  return res.stops
-    .map((stop) => ({ stop, distanceM: metresBetween(lat, lng, stop.lat, stop.lng) }))
-    .filter((s) => s.distanceM <= radiusM)
-    .sort((a, b) => a.distanceM - b.distanceM)
-    .slice(0, limit)
+  const res = await client.getNearbyStops({ lat, lng, radiusM, limit })
+  return res.stops.flatMap(s => s.stop ? [{ stop: s.stop, distanceM: s.distanceM }] : [])
 }
 
 /** Search the area around a point for the closest stop or station, mapped to a SelectedStop. */
 export async function findNearestStop(lat: number, lng: number): Promise<SelectedStop | null> {
-  const dLat = NEAREST_RADIUS_M / 111_320
-  const dLng = NEAREST_RADIUS_M / (111_320 * Math.cos((lat * Math.PI) / 180))
-  const res = await client.getStopsInViewport({
-    minLat: lat - dLat,
-    minLng: lng - dLng,
-    maxLat: lat + dLat,
-    maxLng: lng + dLng,
-  })
-  let best: Stop | null = null
-  let bestD = Infinity
-  for (const s of res.stops) {
-    const d = metresBetween(lat, lng, s.lat, s.lng)
-    if (d < bestD) {
-      bestD = d
-      best = s
-    }
-  }
+  const best = (await findNearbyStops(lat, lng, { limit: 1 }))[0]?.stop
   if (!best) return null
   // Mirror StopSearch.pickStop: a stand indicator is appended to the name, and a rail station's CRS
   // becomes the short code and drives the live train board.

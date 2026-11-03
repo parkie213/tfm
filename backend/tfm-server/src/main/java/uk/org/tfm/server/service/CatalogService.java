@@ -12,7 +12,9 @@ import uk.org.tfm.model.catalog.StopPage;
 import uk.org.tfm.model.storage.LocalityStore;
 import uk.org.tfm.model.storage.StopStore;
 import uk.org.tfm.model.storage.StorageException;
+import uk.org.tfm.proto.v1.GetNearbyStopsResponse;
 import uk.org.tfm.proto.v1.GetStopsInViewportResponse;
+import uk.org.tfm.proto.v1.NearbyStop;
 import uk.org.tfm.proto.v1.SearchItem;
 import uk.org.tfm.proto.v1.SearchStopsResponse;
 
@@ -38,6 +40,34 @@ public final class CatalogService {
       resp.addStops(CatalogProtoMapper.toProto(stop));
     }
     return resp.build();
+  }
+
+  public GetNearbyStopsResponse nearby(
+      double lat, double lng, double radiusM, int limit, boolean busOnly) throws StorageException {
+    if (!Double.isFinite(lat)
+        || !Double.isFinite(lng)
+        || lat < -90
+        || lat > 90
+        || lng < -180
+        || lng > 180
+        || !Double.isFinite(radiusM)
+        || radiusM < 0
+        || radiusM > 5000
+        || limit < 0
+        || limit > 500)
+      throw new IllegalArgumentException(
+          "Invalid coordinates, radius (0–5000 m), or limit (0–500).");
+    var page =
+        stopDao.nearby(lat, lng, radiusM == 0 ? 800 : radiusM, limit == 0 ? 100 : limit, busOnly);
+    var response = GetNearbyStopsResponse.newBuilder().setTruncated(page.truncated());
+    page.stops()
+        .forEach(
+            s ->
+                response.addStops(
+                    NearbyStop.newBuilder()
+                        .setStop(CatalogProtoMapper.toProto(s.stop()))
+                        .setDistanceM(s.distanceM())));
+    return response.build();
   }
 
   public SearchStopsResponse search(String query, int limit) throws StorageException {

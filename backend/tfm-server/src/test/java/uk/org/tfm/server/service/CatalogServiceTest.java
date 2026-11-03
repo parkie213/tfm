@@ -13,6 +13,18 @@ class CatalogServiceTest {
   }
 
   private static class Stops implements StopStore {
+    double radius;
+    int nearbyLimit;
+    boolean buses;
+
+    public NearbyStopPage nearby(
+        double lat, double lng, double radius, int limit, boolean busOnly) {
+      this.radius = radius;
+      this.nearbyLimit = limit;
+      this.buses = busOnly;
+      return new NearbyStopPage(List.of(new NearbyStop(stop("Near"), 42)), false);
+    }
+
     int queries;
     List<RankedStop> hits = List.of();
 
@@ -96,5 +108,29 @@ class CatalogServiceTest {
     assertTrue(result.getTruncated());
     assertEquals(52.5, result.getStops(0).getLat());
     assertEquals(-1.2, result.getStops(0).getLng());
+  }
+
+  @Test
+  void nearbyDefaultsAndReturnedDistancesAreServerOwned() throws Exception {
+    var store = new Stops();
+    var result = new CatalogService(store, new Places()).nearby(52.77, -0.88, 0, 0, true);
+    assertEquals(800, store.radius);
+    assertEquals(100, store.nearbyLimit);
+    assertTrue(store.buses);
+    assertEquals(42, result.getStops(0).getDistanceM());
+    assertEquals("Near", result.getStops(0).getStop().getAtcoCode());
+  }
+
+  @Test
+  void invalidNearbyInputsAreRejectedBeforeStorage() {
+    var service = new CatalogService(new Stops(), new Places());
+    for (double lat : new double[] {Double.NaN, Double.POSITIVE_INFINITY, -91, 91})
+      assertThrows(IllegalArgumentException.class, () -> service.nearby(lat, 0, 800, 8, false));
+    for (double lng : new double[] {Double.NaN, Double.NEGATIVE_INFINITY, -181, 181})
+      assertThrows(IllegalArgumentException.class, () -> service.nearby(0, lng, 800, 8, false));
+    for (double radius : new double[] {Double.NaN, Double.POSITIVE_INFINITY, -1, 5001})
+      assertThrows(IllegalArgumentException.class, () -> service.nearby(0, 0, radius, 8, false));
+    for (int limit : new int[] {-1, 501})
+      assertThrows(IllegalArgumentException.class, () -> service.nearby(0, 0, 800, limit, false));
   }
 }

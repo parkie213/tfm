@@ -18,23 +18,12 @@ export function metresBetween(aLat: number, aLng: number, bLat: number, bLng: nu
   return 2 * R * Math.asin(Math.sqrt(h))
 }
 
-/** Square bbox around a point that comfortably contains a radius (metres). */
-function bboxAround(lat: number, lng: number, radiusM: number) {
-  const dLat = radiusM / 111_320
-  const dLng = radiusM / (111_320 * Math.cos((lat * Math.PI) / 180))
-  return { minLat: lat - dLat, maxLat: lat + dLat, minLng: lng - dLng, maxLng: lng + dLng }
-}
-
-// A NaPTAN bus stop type (BCT on-street, BCS / BCQ bays / variable). Excludes rail (RSE/RLY/MET).
-function isBusStop(s: Stop): boolean {
-  return s.stopType.startsWith('BC')
-}
-
 // ---- nearby stop discovery --------------------------------------------------
 
 export interface UseNearbyStopsResult {
   stops: Stop[]
   atcoCodes: string[]
+  distances: Map<string, number>
   loading: boolean
   error: string | null
 }
@@ -44,6 +33,7 @@ const NEARBY_SEARCH_RADIUS_M = 800
 /** Returns nearby bus-stop candidates, nearest first, for an explicit kiosk selection. */
 export function useNearbyStops(point: { lat: number; lng: number } | null, radiusM = NEARBY_SEARCH_RADIUS_M): UseNearbyStopsResult {
   const [stops, setStops] = useState<Stop[]>([])
+  const [distances, setDistances] = useState(new Map<string, number>())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -53,28 +43,26 @@ export function useNearbyStops(point: { lat: number; lng: number } | null, radiu
   useEffect(() => {
     if (lat === undefined || lng === undefined) {
       setStops([])
+      setDistances(new Map())
+      setError(null)
       setLoading(false)
       return
     }
     const here = { lat, lng } // narrowed copy for the async closure
     let mounted = true
     const controller = new AbortController()
-    const bbox = bboxAround(here.lat, here.lng, radiusM)
     setStops([])
+    setDistances(new Map())
     setError(null)
     setLoading(true)
 
     async function run() {
       try {
-        const res = await client.getStopsInViewport(bbox, { signal: controller.signal })
+        const res = await client.getNearbyStops({ ...here, radiusM, limit: 500, busOnly: true }, { signal: controller.signal })
         if (!mounted) return
-        const ranked = res.stops
-          .filter(isBusStop)
-          .map((s) => ({ s, d: metresBetween(here.lat, here.lng, s.lat, s.lng) }))
-          .filter(({ d }) => d <= radiusM)
-          .sort((a, b) => a.d - b.d)
         if (res.truncated) throw new Error('The area contains too many stops. Try a more precise location.')
-        setStops(ranked.map(({ s }) => s))
+        setStops(res.stops.flatMap(s => s.stop ? [s.stop] : []))
+        setDistances(new Map(res.stops.flatMap(s => s.stop ? [[s.stop.atcoCode, s.distanceM] as const] : [])))
         setError(null)
       } catch (err) {
         if (!mounted) return
@@ -93,7 +81,7 @@ export function useNearbyStops(point: { lat: number; lng: number } | null, radiu
   }, [lat, lng, radiusM])
 
   const atcoCodes = stops.map((s) => s.atcoCode)
-  return { stops, atcoCodes, loading, error }
+  return { stops, atcoCodes, distances, loading, error }
 }
 
 // ---- board for explicitly selected stops ---------------------------------

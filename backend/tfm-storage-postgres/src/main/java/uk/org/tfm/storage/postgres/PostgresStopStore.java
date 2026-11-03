@@ -15,6 +15,8 @@ import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.org.tfm.model.catalog.NearbyStop;
+import uk.org.tfm.model.catalog.NearbyStopPage;
 import uk.org.tfm.model.catalog.RankedStop;
 import uk.org.tfm.model.catalog.Stop;
 import uk.org.tfm.model.catalog.StopDefinition;
@@ -137,6 +139,42 @@ public final class PostgresStopStore implements StopStore {
         stops = stops.subList(0, VIEWPORT_CAP);
       }
       return new StopPage(stops, truncated);
+    }
+  }
+
+  @Override
+  public NearbyStopPage nearby(double lat, double lng, double radiusM, int limit, boolean busOnly)
+      throws StorageException {
+    String sql =
+        """
+        SELECT atco_code, common_name, indicator, locality_name, stop_type, crs,
+               ST_Y(location::geometry) AS lat, ST_X(location::geometry) AS lng,
+               ST_Distance(location, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography) AS distance_m
+        FROM stops
+        WHERE status = 'active'
+          AND stop_type IN ('BCT', 'BCS', 'BCQ', 'RSE', 'RLY', 'MET')
+          AND (NOT ? OR stop_type IN ('BCT', 'BCS', 'BCQ'))
+          AND ST_DWithin(location, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography, ?)
+        ORDER BY distance_m, atco_code
+        LIMIT ?
+        """;
+    try (Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setDouble(1, lng);
+      ps.setDouble(2, lat);
+      ps.setBoolean(3, busOnly);
+      ps.setDouble(4, lng);
+      ps.setDouble(5, lat);
+      ps.setDouble(6, radiusM);
+      ps.setInt(7, limit + 1);
+      var rows = new ArrayList<NearbyStop>();
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) rows.add(new NearbyStop(mapRow(rs), rs.getDouble("distance_m")));
+      }
+      return new NearbyStopPage(
+          List.copyOf(rows.subList(0, Math.min(limit, rows.size()))), rows.size() > limit);
+    } catch (SQLException e) {
+      throw new StorageException("Nearby stop query failed", e);
     }
   }
 

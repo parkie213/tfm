@@ -17,6 +17,8 @@ import uk.org.tfm.proto.v1.GetDataSourcesRequest;
 import uk.org.tfm.proto.v1.GetDataSourcesResponse;
 import uk.org.tfm.proto.v1.GetMapDataStatusRequest;
 import uk.org.tfm.proto.v1.GetMapDataStatusResponse;
+import uk.org.tfm.proto.v1.GetNearbyStopsRequest;
+import uk.org.tfm.proto.v1.GetNearbyStopsResponse;
 import uk.org.tfm.proto.v1.GetRouteShapesInViewportRequest;
 import uk.org.tfm.proto.v1.GetRouteShapesInViewportResponse;
 import uk.org.tfm.proto.v1.GetRouteStopsRequest;
@@ -456,6 +458,33 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     // poll,
     // auto-unsubscribing on cancel. We never call onCompleted — the client closes the stream.
     busVehicles.subscribe(responseObserver, request);
+  }
+
+  /**
+   * Radius/type filtering and distance ordering precede the cap; invalid queries fail explicitly.
+   */
+  @Override
+  public void getNearbyStops(
+      GetNearbyStopsRequest request, StreamObserver<GetNearbyStopsResponse> observer) {
+    try {
+      observer.onNext(
+          catalog.nearby(
+              request.getLat(),
+              request.getLng(),
+              request.getRadiusM(),
+              request.getLimit(),
+              request.getBusOnly()));
+      observer.onCompleted();
+    } catch (IllegalArgumentException e) {
+      observer.onError(
+          Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
+    } catch (Exception e) {
+      log.error("Nearby stop query failed", e);
+      observer.onError(
+          Status.UNAVAILABLE
+              .withDescription("Stop data temporarily unavailable.")
+              .asRuntimeException());
+    }
   }
 
   /**

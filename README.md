@@ -281,3 +281,10 @@ A fresh Kafka consumer starts at latest and cannot reconstruct complete occupanc
 REST remains authoritative for board times, cancellation and coach information (30-second cache);
 Kafka movement forecasts do not replace those times. Platform polling remains every ten seconds,
 separate from the station board's fifteen-second browser stream.
+
+`GetNearbyStops` supplies active nearby bus, rail and metro stops using PostGIS geography distances.
+Radius/type filtering and distance ordering happen before the result limit; equal distances use ATCO
+code order. The default radius is 800 m (maximum 5 km), and the default limit is 100 (maximum 500).
+The response includes distances in metres and an explicit truncation flag. Near-me and kiosk setup
+use this query; venues still choose their own boarding stops. Map grouping and walking estimates
+remain in the browser.

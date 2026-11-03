@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tfm/v1/stops.proto.
  */
 export const file_tfm_v1_stops: GenFile = /*@__PURE__*/
-  fileDesc("ChJ0Zm0vdjEvc3RvcHMucHJvdG8SBnRmbS52MSKGAQoEU3RvcBIRCglhdGNvX2NvZGUYASABKAkSDAoEbmFtZRgCIAEoCRIRCglpbmRpY2F0b3IYAyABKAkSEAoIbG9jYWxpdHkYBCABKAkSEQoJc3RvcF90eXBlGAUgASgJEgsKA2xhdBgGIAEoARILCgNsbmcYByABKAESCwoDY3JzGAggASgJIl8KGUdldFN0b3BzSW5WaWV3cG9ydFJlcXVlc3QSDwoHbWluX2xhdBgBIAEoARIPCgdtaW5fbG5nGAIgASgBEg8KB21heF9sYXQYAyABKAESDwoHbWF4X2xuZxgEIAEoASJMChpHZXRTdG9wc0luVmlld3BvcnRSZXNwb25zZRIbCgVzdG9wcxgBIAMoCzIMLnRmbS52MS5TdG9wEhEKCXRydW5jYXRlZBgCIAEoCCIyChJTZWFyY2hTdG9wc1JlcXVlc3QSDQoFcXVlcnkYASABKAkSDQoFbGltaXQYAiABKAUiUwoITG9jYWxpdHkSDAoEY29kZRgBIAEoCRIMCgRuYW1lGAIgASgJEhEKCXF1YWxpZmllchgDIAEoCRILCgNsYXQYBCABKAESCwoDbG5nGAUgASgBIlUKClNlYXJjaEl0ZW0SHAoEc3RvcBgBIAEoCzIMLnRmbS52MS5TdG9wSAASIQoFcGxhY2UYAiABKAsyEC50Zm0udjEuTG9jYWxpdHlIAEIGCgRpdGVtIjgKE1NlYXJjaFN0b3BzUmVzcG9uc2USIQoFaXRlbXMYASADKAsyEi50Zm0udjEuU2VhcmNoSXRlbUIjChN1ay5vcmcudGZtLnByb3RvLnYxQgpTdG9wc1Byb3RvUAFiBnByb3RvMw");
+  fileDesc("ChJ0Zm0vdjEvc3RvcHMucHJvdG8SBnRmbS52MSKGAQoEU3RvcBIRCglhdGNvX2NvZGUYASABKAkSDAoEbmFtZRgCIAEoCRIRCglpbmRpY2F0b3IYAyABKAkSEAoIbG9jYWxpdHkYBCABKAkSEQoJc3RvcF90eXBlGAUgASgJEgsKA2xhdBgGIAEoARILCgNsbmcYByABKAESCwoDY3JzGAggASgJIl8KGUdldFN0b3BzSW5WaWV3cG9ydFJlcXVlc3QSDwoHbWluX2xhdBgBIAEoARIPCgdtaW5fbG5nGAIgASgBEg8KB21heF9sYXQYAyABKAESDwoHbWF4X2xuZxgEIAEoASJMChpHZXRTdG9wc0luVmlld3BvcnRSZXNwb25zZRIbCgVzdG9wcxgBIAMoCzIMLnRmbS52MS5TdG9wEhEKCXRydW5jYXRlZBgCIAEoCCIyChJTZWFyY2hTdG9wc1JlcXVlc3QSDQoFcXVlcnkYASABKAkSDQoFbGltaXQYAiABKAUiUwoITG9jYWxpdHkSDAoEY29kZRgBIAEoCRIMCgRuYW1lGAIgASgJEhEKCXF1YWxpZmllchgDIAEoCRILCgNsYXQYBCABKAESCwoDbG5nGAUgASgBIlUKClNlYXJjaEl0ZW0SHAoEc3RvcBgBIAEoCzIMLnRmbS52MS5TdG9wSAASIQoFcGxhY2UYAiABKAsyEC50Zm0udjEuTG9jYWxpdHlIAEIGCgRpdGVtIjgKE1NlYXJjaFN0b3BzUmVzcG9uc2USIQoFaXRlbXMYASADKAsyEi50Zm0udjEuU2VhcmNoSXRlbSJkChVHZXROZWFyYnlTdG9wc1JlcXVlc3QSCwoDbGF0GAEgASgBEgsKA2xuZxgCIAEoARIQCghyYWRpdXNfbRgDIAEoARINCgVsaW1pdBgEIAEoBRIQCghidXNfb25seRgFIAEoCCI8CgpOZWFyYnlTdG9wEhoKBHN0b3AYASABKAsyDC50Zm0udjEuU3RvcBISCgpkaXN0YW5jZV9tGAIgASgBIk4KFkdldE5lYXJieVN0b3BzUmVzcG9uc2USIQoFc3RvcHMYASADKAsyEi50Zm0udjEuTmVhcmJ5U3RvcBIRCgl0cnVuY2F0ZWQYAiABKAhCIwoTdWsub3JnLnRmbS5wcm90by52MUIKU3RvcHNQcm90b1ABYgZwcm90bzM");
 
 /**
  * @generated from message tfm.v1.Stop
@@ -251,4 +251,91 @@ export type SearchStopsResponse = Message<"tfm.v1.SearchStopsResponse"> & {
  */
 export const SearchStopsResponseSchema: GenMessage<SearchStopsResponse> = /*@__PURE__*/
   messageDesc(file_tfm_v1_stops, 6);
+
+/**
+ * @generated from message tfm.v1.GetNearbyStopsRequest
+ */
+export type GetNearbyStopsRequest = Message<"tfm.v1.GetNearbyStopsRequest"> & {
+  /**
+   * @generated from field: double lat = 1;
+   */
+  lat: number;
+
+  /**
+   * @generated from field: double lng = 2;
+   */
+  lng: number;
+
+  /**
+   * 0 = 800 m; otherwise positive and at most 5000 m. Straight-line geography distance.
+   *
+   * @generated from field: double radius_m = 3;
+   */
+  radiusM: number;
+
+  /**
+   * 0 = 100; maximum 500. Limit applies after radius/type filtering and distance ordering.
+   *
+   * @generated from field: int32 limit = 4;
+   */
+  limit: number;
+
+  /**
+   * @generated from field: bool bus_only = 5;
+   */
+  busOnly: boolean;
+};
+
+/**
+ * Describes the message tfm.v1.GetNearbyStopsRequest.
+ * Use `create(GetNearbyStopsRequestSchema)` to create a new message.
+ */
+export const GetNearbyStopsRequestSchema: GenMessage<GetNearbyStopsRequest> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_stops, 7);
+
+/**
+ * @generated from message tfm.v1.NearbyStop
+ */
+export type NearbyStop = Message<"tfm.v1.NearbyStop"> & {
+  /**
+   * @generated from field: tfm.v1.Stop stop = 1;
+   */
+  stop?: Stop | undefined;
+
+  /**
+   * @generated from field: double distance_m = 2;
+   */
+  distanceM: number;
+};
+
+/**
+ * Describes the message tfm.v1.NearbyStop.
+ * Use `create(NearbyStopSchema)` to create a new message.
+ */
+export const NearbyStopSchema: GenMessage<NearbyStop> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_stops, 8);
+
+/**
+ * @generated from message tfm.v1.GetNearbyStopsResponse
+ */
+export type GetNearbyStopsResponse = Message<"tfm.v1.GetNearbyStopsResponse"> & {
+  /**
+   * distance ascending, ATCO code breaks ties
+   *
+   * @generated from field: repeated tfm.v1.NearbyStop stops = 1;
+   */
+  stops: NearbyStop[];
+
+  /**
+   * @generated from field: bool truncated = 2;
+   */
+  truncated: boolean;
+};
+
+/**
+ * Describes the message tfm.v1.GetNearbyStopsResponse.
+ * Use `create(GetNearbyStopsResponseSchema)` to create a new message.
+ */
+export const GetNearbyStopsResponseSchema: GenMessage<GetNearbyStopsResponse> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_stops, 9);
 
