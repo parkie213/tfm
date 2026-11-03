@@ -38,6 +38,16 @@ service TfmService {
   // or UNAVAILABLE if the board cannot be loaded.
   rpc GetTrainArrivals(GetTrainArrivalsRequest) returns (GetTrainArrivalsResponse);
 
+  // Merges scheduled departures for explicitly selected stops. Trips calling at several selected
+  // stops appear once at their earliest upcoming call; equal times use request stop order.
+  // Invalid selections/dates return INVALID_ARGUMENT; disabled timetables return UNIMPLEMENTED.
+  // Individual stop failures produce a partial board; all-stop failure returns UNAVAILABLE.
+  rpc GetBusBoard(GetBusBoardRequest) returns (GetBusBoardResponse);
+
+  // Streams complete selected-stop boards initially and every 15 seconds. Partial boards identify
+  // unavailable stops; all-stop failures skip the frame. Client cancellation removes the subscription.
+  rpc StreamBusBoard(GetBusBoardRequest) returns (stream GetBusBoardResponse);
+
   // Returns scheduled bus departures for a required NaPTAN ATCO stop code.
   // An empty date requests upcoming departures; a supplied date selects that day's timetable.
   // Returns UNIMPLEMENTED when timetables are disabled, INVALID_ARGUMENT for a blank stop

@@ -540,3 +540,12 @@
     max-height: 38vh;
   }
 }
+
+/* Explicit venue stop selection. */
+.stopPicker { max-width: 44rem; max-height: 100%; min-height: 0; }
+.stopChoices { width: 100%; overflow-y: auto; min-height: 0; text-align: left; }
+.stopChoice { display: flex; align-items: center; gap: 0.85rem; padding: 0.85rem; border-bottom: 1px solid var(--tv-card-border); cursor: pointer; }
+.stopChoice input { width: 1.2rem; height: 1.2rem; flex: none; accent-color: var(--brand); }
+.stopDetail { display: block; margin-top: 0.25rem; color: var(--tv-text-dim); font-size: 0.9rem; }
+.setupActions { display: flex; gap: 1.5rem; }
+.partialNotice { padding: 0.5rem 1rem; margin: 0; color: var(--tv-text-dim); }

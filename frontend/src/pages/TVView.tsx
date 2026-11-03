@@ -6,13 +6,13 @@ import { TfmLogo } from '../components/TfmLogo'
 import { ShopMapGL } from '../components/mapgl/ShopMapGL'
 import { useTrainDepartures, hhmmSecs } from '../hooks/useDepartures'
 import {
-  useNearbyStops,
   useCombinedBusDepartures,
   metresBetween,
-  type UseNearbyStopsResult,
   type UseCombinedBusDeparturesResult,
 } from '../hooks/useTownCentreBuses'
-import { standCode, isBayCode } from '../lib/stopGrouping'
+import { standCode } from '../lib/stopGrouping'
+import { useKioskStops } from '../hooks/useKioskStops'
+import { KioskStopPicker } from '../components/KioskStopPicker'
 import { useShopLocation, geocodeAddress, GeocodeError, type ShopLocation } from '../hooks/useShopLocation'
 import { useRelativeTime, relativeTime } from '../hooks/useRelativeTime'
 import { MELTON_STATION } from '../constants/stops'
@@ -27,25 +27,6 @@ function walkInfo(from: ShopLocation, toLat: number, toLng: number): { dist: str
   const m = metresBetween(from.lat, from.lng, toLat, toLng) * WALK_DETOUR
   const dist = m < 950 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(1)} km`
   return { dist, mins: Math.max(1, Math.round(m / WALK_M_PER_MIN)) }
-}
-
-// Point at the main stop of the nearby cluster: rank its stops by how many services depart from them
-// (busiest = "largest"), tie-broken by proximity, and fall back to the nearest stop.
-function busiestNearbyStop(
-  from: ShopLocation,
-  stops: Stop[],
-  departures: { atcoCode: string }[],
-): Stop | null {
-  if (stops.length === 0) return null
-  const counts = new Map<string, number>()
-  for (const d of departures) counts.set(d.atcoCode, (counts.get(d.atcoCode) ?? 0) + 1)
-  return [...stops]
-    .map((s) => ({
-      s,
-      count: counts.get(s.atcoCode) ?? 0,
-      dist: metresBetween(from.lat, from.lng, s.lat, s.lng),
-    }))
-    .sort((a, b) => b.count - a.count || a.dist - b.dist)[0].s
 }
 
 // ---- header clock (ticks on the second; TV displays expect a live clock) -----
@@ -218,23 +199,19 @@ function TrainBoard({ now }: { now: Date }) {
 
 function BusBoard({
   now,
-  nearbyStops,
+  stops,
   busFeed,
 }: {
   now: Date
-  nearbyStops: UseNearbyStopsResult
+  stops: Stop[]
   busFeed: UseCombinedBusDeparturesResult
 }) {
-  const { stops, loading: stopsLoading, error: stopsError } = nearbyStops
   const { departures, error, unimplemented, loading } = busFeed
 
-  const isLoading = stopsLoading || (loading && departures.length === 0)
-  const hardError = stopsError || error
+  const isLoading = loading && departures.length === 0
+  const hardError = error
 
-  // Stand (NaPTAN indicator) per contributing stop, joined to a departure by its atcoCode — the same
-  // source the main app's combined bus board uses. We only surface a per-row stand when the visible
-  // services actually leave from more than one stand; if they all share one, a column of identical "S2"
-  // reads as broken, so we state that single stand once in the header instead. (Mirrors BoardPanel.)
+  // Show each boarding stop's indicator alongside its name, including opposite-direction stops.
   const indicatorByAtco = useMemo(() => {
     const m = new Map<string, string>()
     for (const s of stops) {
@@ -243,27 +220,15 @@ function BusBoard({
     }
     return m
   }, [stops])
-  const distinctStands = useMemo(() => {
-    const set = new Set<string>()
-    for (const { atcoCode } of departures) {
-      const ind = indicatorByAtco.get(atcoCode)
-      if (ind) set.add(ind)
-    }
-    return [...set]
-  }, [departures, indicatorByAtco])
-  const showStandPerRow = distinctStands.length > 1
-  // When every visible service shares one stand, state it once in the header. Prefix "Stand" only for
-  // numbered bays (S2) — not relation indicators (opp/outside), where "Stand outside" would read wrong.
-  const loneStand = distinctStands.length === 1 ? distinctStands[0] : null
-  // Name the cluster after its nearest stop (stops arrive nearest-first), e.g. "College of Further Education".
-  const place = stops[0]?.name || 'Nearby stops'
-  const subtitle = loneStand ? `${place} · ${isBayCode(loneStand) ? 'Stand ' : ''}${loneStand}` : place
+  const subtitle = stops.length === 1 ? `${stops[0].name}${stops[0].indicator ? ` · ${stops[0].indicator}` : ''}`
+    : `${stops.length} selected stops`
 
   // Stable per-service identity so a row keeps its DOM node when the live time reorders the board —
-  // both for React's reconciliation and the FLIP slide. Mirrors the hook's trip-dedup key.
-  const rowKey = (d: Departure) => d.serviceId || `${d.line}|${d.destination}|${d.scheduledTime}`
+  // both for React's reconciliation and the FLIP slide. Uses the server's trip identity.
+  const rowKey = (d: Departure, atcoCode: string, index: number) =>
+    d.serviceId || `${atcoCode}|${d.line}|${d.destination}|${d.scheduledTime}|${index}`
   const rowsRef = useRef<HTMLDivElement>(null)
-  useFlipReorder(rowsRef, departures.map(({ departure }) => rowKey(departure)))
+  useFlipReorder(rowsRef, departures.map(({ departure, atcoCode }, index) => rowKey(departure, atcoCode, index)))
 
   return (
     <section className={styles.board}>
@@ -274,9 +239,12 @@ function BusBoard({
       {!unimplemented && !hardError && !isLoading && departures.length === 0 && (
         <EmptyState>No buses due from nearby stops right now</EmptyState>
       )}
+      {busFeed.unavailableAtcoCodes.length > 0 && <p className={styles.partialNotice} role="status">
+        Some selected stops are unavailable. Showing departures from the remaining stops.
+      </p>}
       <div className={styles.rows} ref={rowsRef}>
-        {departures.map(({ departure: d, stopName, atcoCode }) => {
-          const stand = showStandPerRow ? indicatorByAtco.get(atcoCode) : undefined
+        {departures.map(({ departure: d, stopName, atcoCode }, index) => {
+          const stand = indicatorByAtco.get(atcoCode)
           const punct = busPunctuality(d)
           const expectedDiffers =
             d.isLive &&
@@ -289,8 +257,8 @@ function BusBoard({
           return (
             <div
               className={`${styles.row} ${isLate ? styles.rowLate : ''}`}
-              key={rowKey(d)}
-              data-flip-key={rowKey(d)}
+              key={rowKey(d, atcoCode, index)}
+              data-flip-key={rowKey(d, atcoCode, index)}
             >
               <div className={styles.timeCell}>
                 <span className={`${styles.time} ${expectedDiffers ? styles.timeStruck : ''}`}>
@@ -324,16 +292,12 @@ function BusBoard({
 
 export default function TVView() {
   const { location, setLocation, clear } = useShopLocation()
+  const { selectedStops, saveStops } = useKioskStops(location)
+  const [editingStops, setEditingStops] = useState(false)
   const clock = useClock()
   const now = useRelativeTime()
 
-  // Owned here (not in BusBoard) so the walk-distance card and the board share one polled feed.
-  const nearbyStops = useNearbyStops(location)
-  const busFeed = useCombinedBusDepartures(nearbyStops.atcoCodes)
-  const majorStop = useMemo(
-    () => (location ? busiestNearbyStop(location, nearbyStops.stops, busFeed.departures) : null),
-    [location, nearbyStops.stops, busFeed.departures],
-  )
+  const busFeed = useCombinedBusDepartures(selectedStops?.map((stop) => stop.atcoCode) ?? [])
 
   const dateLabel = clock.toLocaleDateString('en-GB', {
     weekday: 'long',
@@ -375,16 +339,20 @@ export default function TVView() {
 
       {!location ? (
         <AddressPrompt onResolved={handleAddress} />
+      ) : selectedStops === null || editingStops ? (
+        <KioskStopPicker key={`${location.lat},${location.lng}`} location={location} selected={selectedStops}
+          onSave={(stops) => { saveStops(stops); setEditingStops(false) }}
+          onCancel={() => setEditingStops(false)}
+          onChangeLocation={() => { clear(); setEditingStops(false) }} />
       ) : (
         <main className={styles.grid}>
           <section className={styles.mapCard}>
-            <ShopMapGL shop={location} className={styles.map} />
+            <ShopMapGL shop={location} selectedStops={selectedStops} className={styles.map} />
             <div className={styles.youAreHere}>
               <span className={styles.youAreHereLabel}>You are here</span>
               <span className={styles.youAreHereAddr}>{location.label}</span>
               {(() => {
                 const station = walkInfo(location, MELTON_STATION.lat, MELTON_STATION.lng)
-                const stop = majorStop ? walkInfo(location, majorStop.lat, majorStop.lng) : null
                 return (
                   <div className={styles.walkRows}>
                     <span className={styles.walkRow}>
@@ -393,23 +361,29 @@ export default function TVView() {
                       <span className={styles.walkTime}>{station.mins} min walk</span>
                       <span className={styles.walkDist}>{station.dist}</span>
                     </span>
-                    {majorStop && stop && (
-                      <span className={styles.walkRow}>
-                        <span className={styles.walkIcon} aria-hidden="true">🚌</span>
-                        <span className={styles.walkDest}>{majorStop.name}</span>
-                        <span className={styles.walkTime}>{stop.mins} min walk</span>
-                        <span className={styles.walkDist}>{stop.dist}</span>
-                      </span>
-                    )}
+                    {selectedStops.map((stop) => {
+                      const walk = walkInfo(location, stop.lat, stop.lng)
+                      return (
+                        <span className={styles.walkRow} key={stop.atcoCode}>
+                          <span className={styles.walkIcon} aria-hidden="true">🚌</span>
+                          <span className={styles.walkDest}>{stop.name}{stop.indicator ? ` · ${stop.indicator}` : ''}</span>
+                          <span className={styles.walkTime}>{walk.mins} min walk</span>
+                          <span className={styles.walkDist}>{walk.dist}</span>
+                        </span>
+                      )
+                    })}
                   </div>
                 )
               })()}
+              <button className={styles.changeLink} onClick={() => setEditingStops(true)} type="button">
+                Change bus stops
+              </button>
               <button className={styles.changeLink} onClick={clear} type="button">
                 Change location
               </button>
             </div>
           </section>
-          <BusBoard now={now} nearbyStops={nearbyStops} busFeed={busFeed} />
+          <BusBoard now={now} stops={selectedStops} busFeed={busFeed} />
           <TrainBoard now={now} />
         </main>
       )}

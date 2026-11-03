@@ -10,8 +10,11 @@ Use these for manual smoke checks after changing the UI.
    estimates, follow it, then pan the map to release camera follow.
 4. With an RDM LDBWS key configured, select Melton Mowbray railway station. Inspect the
    train board and coach details. With optional timetable data, open a train's calling points.
-5. Open `?view=tv`, choose a Melton address, and check the kiosk map and train/bus boards.
-   Exit to return to the main map. Check the layout at a desktop and mobile width.
+5. Open `?view=tv`, choose a Melton address, then select several nearby bus stops. Confirm each
+   bus departure names its boarding stop, the map includes the selected stops, and the selection
+   survives a reload. Use **Change bus stops** to edit the selection; cancel once to check the
+   saved board is preserved, then save a different selection. Check the partial-results notice
+   when one stop query fails. Exit to return to the main map. Check desktop and mobile widths.
 6. Open the data-sources page. Missing credentials should show an unavailable source,
    rather than claiming that its data is live.
 7. Deny location permission and confirm the “near me” control stops loading. Allow it

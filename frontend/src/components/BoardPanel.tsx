@@ -124,8 +124,8 @@ interface CombinedBusBoardProps {
 }
 
 /** One board merging every stand of a grouped stop (e.g. a bus station's S1–S4), time-sorted, each row
- *  tagged with the stand it leaves from. Reuses the TV view's combined-departures hook (parallel
- *  per-stop fetch + dedupe-by-trip + sort). Mirrors the single-stop board's day-stepper / "show earlier"
+ *  tagged with the stand it leaves from. Reuses the TV view's combined-departures hook (server-side
+ *  selected-stop aggregation). Mirrors the single-stop board's day-stepper / "show earlier"
  *  / auto-advance-to-tomorrow so a grouped stop has the same timetable controls. */
 function CombinedBusBoard({ group, onSelectService }: CombinedBusBoardProps) {
   const [dayOffset, setDayOffset] = useState(0)
@@ -139,7 +139,7 @@ function CombinedBusBoard({ group, onSelectService }: CombinedBusBoardProps) {
 
   const wholeDayToday = dayOffset === 0 && showEarlier
   const date = wholeDayToday ? isoDate(new Date()) : dateForOffset(dayOffset)
-  const { departures, loading, error, unimplemented, lastUpdated, truncated } =
+  const { departures, loading, error, unimplemented, lastUpdated, truncated, unavailableAtcoCodes } =
     useCombinedBusDepartures(atcoCodes, date)
 
   // New group selected → back to today.
@@ -231,6 +231,7 @@ function CombinedBusBoard({ group, onSelectService }: CombinedBusBoardProps) {
   return (
     <>
       {stepper}
+      {unavailableAtcoCodes.length > 0 && <p className={styles.jumpNote}>Some stops are unavailable; this board is incomplete.</p>}
       {canToggleEarlier && (
         <button className={styles.earlierBtn} onClick={() => setShowEarlier((v) => !v)} aria-expanded={showEarlier}>
           {showEarlier ? '↓ Upcoming only' : '↑ Show earlier buses'}

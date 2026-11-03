@@ -38,7 +38,7 @@ Darwin turned out to be right. 🤷
 
 This was one of my first projects with Claude. When I decided to shut down the VPS, I thought
 it was worth keeping around as a portfolio project. Before publishing it, I split the Java
-backend into smaller modules with clearer responsibilities.
+backend into smaller modules with clearer responsibilities and simplifying some of the questionable backend interactions.
 
 ## Features
 
@@ -56,8 +56,10 @@ backend into smaller modules with clearer responsibilities.
 <img src="images/kiosk.png" alt="Dark kiosk view with a local map, nearby bus departures, and Melton Mowbray train departures" width="100%">
 
 The kiosk view brings a local map and bus and train boards together in a layout for a larger
-screen. Choose an address to show nearby stops and walking-distance estimates, then leave the
-boards to update. Open it with `?view=tv`.
+screen. Enter the venue's address, then choose up to ten nearby bus stops to include. The saved
+selection survives reloads, and each departure shows its boarding stop. The map fits the venue
+and selected stops, with walking-distance estimates for each. Use **Change bus stops** to update
+the selection later. Open it with `?view=tv`.
 
 ### Know where the data stands
 

@@ -6,6 +6,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.org.tfm.proto.v1.GetBusBoardRequest;
+import uk.org.tfm.proto.v1.GetBusBoardResponse;
 import uk.org.tfm.proto.v1.GetBusDeparturesRequest;
 import uk.org.tfm.proto.v1.GetBusDeparturesResponse;
 import uk.org.tfm.proto.v1.GetStationBoardRequest;
@@ -36,11 +38,25 @@ public final class BoardStreamService {
   private final BroadcastHub<GetStationBoardRequest, GetStationBoardResponse> stationBoard;
   private final BroadcastHub<GetTrainDeparturesRequest, GetTrainDeparturesResponse> trainDep;
   private final BroadcastHub<GetTrainArrivalsRequest, GetTrainArrivalsResponse> trainArr;
+  private final BroadcastHub<GetBusBoardRequest, GetBusBoardResponse> busBoard;
   private final BroadcastHub<GetBusDeparturesRequest, GetBusDeparturesResponse> busDep;
 
   @Inject
   public BoardStreamService(
-      TrainBoardService trains, BusTimetableService timetables, StationBoardService stations) {
+      TrainBoardService trains,
+      BusTimetableService timetables,
+      StationBoardService stations,
+      BusBoardService busBoards) {
+    this.busBoard =
+        new BroadcastHub<>(
+            "selected-stop-bus-board",
+            req -> {
+              try {
+                return List.of(busBoards.getBoard(req));
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            });
     this.stationBoard =
         new BroadcastHub<>(
             "station-board",
@@ -81,6 +97,7 @@ public final class BoardStreamService {
     trainDep.startPeriodic(REFRESH_SECONDS);
     trainArr.startPeriodic(REFRESH_SECONDS);
     busDep.startPeriodic(REFRESH_SECONDS);
+    busBoard.startPeriodic(REFRESH_SECONDS);
     log.info("Board stream service started (refresh {}s).", REFRESH_SECONDS);
   }
 
@@ -89,6 +106,7 @@ public final class BoardStreamService {
     trainDep.shutdown();
     trainArr.shutdown();
     busDep.shutdown();
+    busBoard.shutdown();
   }
 
   public void subscribeStationBoard(
@@ -104,6 +122,10 @@ public final class BoardStreamService {
   public void subscribeTrainArrivals(
       StreamObserver<GetTrainArrivalsResponse> obs, GetTrainArrivalsRequest req) {
     trainArr.subscribe(obs, req);
+  }
+
+  public void subscribeBusBoard(StreamObserver<GetBusBoardResponse> obs, GetBusBoardRequest req) {
+    busBoard.subscribe(obs, req);
   }
 
   public void subscribeBusDepartures(

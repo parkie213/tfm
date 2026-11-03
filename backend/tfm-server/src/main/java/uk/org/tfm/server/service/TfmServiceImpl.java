@@ -7,6 +7,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.org.tfm.proto.v1.GetBusBoardRequest;
+import uk.org.tfm.proto.v1.GetBusBoardResponse;
 import uk.org.tfm.proto.v1.GetBusDeparturesRequest;
 import uk.org.tfm.proto.v1.GetBusDeparturesResponse;
 import uk.org.tfm.proto.v1.GetBusVehiclesRequest;
@@ -51,6 +53,7 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
   private final BusVehicleService busVehicles;
   private final BoardStreamService boardStreams;
   private final BusTimetableService timetables;
+  private final BusBoardService busBoards;
   private final Config config;
   private final CatalogService catalog;
   private final TrainJourneyService journeys;
@@ -65,6 +68,7 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
       BusVehicleService busVehicles,
       BoardStreamService boardStreams,
       BusTimetableService timetables,
+      BusBoardService busBoards,
       CatalogService catalog,
       TrainJourneyService journeys,
       StationPlatformService platforms,
@@ -76,6 +80,7 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     this.busVehicles = busVehicles;
     this.boardStreams = boardStreams;
     this.timetables = timetables;
+    this.busBoards = busBoards;
     this.config = config;
     this.catalog = catalog;
     this.journeys = journeys;
@@ -178,6 +183,58 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
               .withDescription("Arrivals board unavailable: " + e.getMessage())
               .withCause(e)
               .asRuntimeException());
+    }
+  }
+
+  /**
+   * Returns the merged timetable for explicitly selected stops, with a boarding stop on each row.
+   * Invalid selections return INVALID_ARGUMENT; disabled timetables return UNIMPLEMENTED. A failed
+   * stop is listed in the partial response; failure of every selected stop returns UNAVAILABLE.
+   */
+  @Override
+  public void getBusBoard(
+      GetBusBoardRequest request, StreamObserver<GetBusBoardResponse> observer) {
+    var normalized = busBoardRequest(request, observer);
+    if (normalized == null) return;
+    try {
+      observer.onNext(busBoards.getBoard(normalized));
+      observer.onCompleted();
+    } catch (Exception e) {
+      log.warn("Selected-stop bus board unavailable.", e);
+      observer.onError(
+          Status.UNAVAILABLE
+              .withDescription("Bus board temporarily unavailable.")
+              .withCause(e)
+              .asRuntimeException());
+    }
+  }
+
+  /**
+   * Streams selected-stop boards initially and every 15 seconds. All-stop query failures skip an
+   * update; partial failures are included in the response. Cancellation removes the subscription.
+   */
+  @Override
+  public void streamBusBoard(
+      GetBusBoardRequest request, StreamObserver<GetBusBoardResponse> observer) {
+    var normalized = busBoardRequest(request, observer);
+    if (normalized != null) boardStreams.subscribeBusBoard(observer, normalized);
+  }
+
+  private GetBusBoardRequest busBoardRequest(
+      GetBusBoardRequest request, StreamObserver<GetBusBoardResponse> observer) {
+    if (!config.busTimetableEnabled()) {
+      observer.onError(
+          Status.UNIMPLEMENTED
+              .withDescription("Bus timetables are disabled.")
+              .asRuntimeException());
+      return null;
+    }
+    try {
+      return BusBoardService.normalize(request);
+    } catch (IllegalArgumentException e) {
+      observer.onError(
+          Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
+      return null;
     }
   }
 

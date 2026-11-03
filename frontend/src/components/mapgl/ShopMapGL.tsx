@@ -5,6 +5,7 @@ import type { MapRef, MapEvent } from 'react-map-gl/maplibre'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { BASEMAP_STYLE } from './basemap'
 import { MELTON_STATION } from '../../constants/stops'
+import type { Stop } from '../../proto/tfm/v1/stops_pb'
 import type { ShopLocation } from '../../hooks/useShopLocation'
 import { useBusVehicles, type Bbox } from '../../hooks/useBusVehicles'
 import { BusRoutesGL } from './BusRoutesGL'
@@ -39,14 +40,16 @@ function pinStyle(size: number, bg: string, pulse = false): CSSProperties {
   }
 }
 
-export function ShopMapGL({ shop, className }: { shop: ShopLocation; className?: string }) {
+export function ShopMapGL({ shop, selectedStops, className }: { shop: ShopLocation; selectedStops: Stop[]; className?: string }) {
   const mapRef = useRef<MapRef | null>(null)
   const [firstLabelId, setFirstLabelId] = useState<string | undefined>(undefined)
   const [busBounds, setBusBounds] = useState<Bbox | null>(null)
   const buses = useBusVehicles(busBounds)
 
   const fitAndReport = (map: maplibregl.Map) => {
-    map.jumpTo({ center: [shop.lng, shop.lat], zoom: SHOP_ZOOM })
+    const bounds = new maplibregl.LngLatBounds([shop.lng, shop.lat], [shop.lng, shop.lat])
+    for (const stop of selectedStops) bounds.extend([stop.lng, stop.lat])
+    map.fitBounds(bounds, { padding: 45, maxZoom: SHOP_ZOOM, duration: 0 })
     const b = map.getBounds()
     const z = map.getZoom()
     const box: Bbox = { minLat: b.getSouth(), minLng: b.getWest(), maxLat: b.getNorth(), maxLng: b.getEast() }
@@ -62,7 +65,7 @@ export function ShopMapGL({ shop, className }: { shop: ShopLocation; className?:
     const m = mapRef.current?.getMap()
     if (m && m.isStyleLoaded()) fitAndReport(m)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shop.lat, shop.lng])
+  }, [shop.lat, shop.lng, selectedStops])
 
   const live: string[] = []
   if (!buses.unimplemented) live.push(`🚌 ${buses.vehicles.length}`)

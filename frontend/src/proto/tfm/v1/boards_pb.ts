@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tfm/v1/boards.proto.
  */
 export const file_tfm_v1_boards: GenFile = /*@__PURE__*/
-  fileDesc("ChN0Zm0vdjEvYm9hcmRzLnByb3RvEgZ0Zm0udjEiqQIKCURlcGFydHVyZRIWCg5zY2hlZHVsZWRfdGltZRgBIAEoCRIVCg1leHBlY3RlZF90aW1lGAIgASgJEhMKC2Rlc3RpbmF0aW9uGAMgASgJEhAKCG9wZXJhdG9yGAQgASgJEhcKD3BsYXRmb3JtX29yX2JheRgFIAEoCRIOCgZzdGF0dXMYBiABKAkSFQoNZGVsYXlfbWludXRlcxgHIAEoBRIPCgdpc19saXZlGAggASgIEhIKCnNlcnZpY2VfaWQYCSABKAkSDgoGb3JpZ2luGAogASgJEhMKC2NvYWNoX2NvdW50GAsgASgFEh4KB2NvYWNoZXMYDCADKAsyDS50Zm0udjEuQ29hY2gSDAoEbGluZRgNIAEoCRIOCgZub19ncHMYDiABKAgiZAoFQ29hY2gSDgoGbnVtYmVyGAEgASgJEhMKC2NvYWNoX2NsYXNzGAIgASgJEg8KB2xvYWRpbmcYAyABKAUSFQoNbG9hZGluZ19rbm93bhgEIAEoCBIOCgZ0b2lsZXQYBSABKAkiOgoZR2V0VHJhaW5EZXBhcnR1cmVzUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUihgEKGkdldFRyYWluRGVwYXJ0dXJlc1Jlc3BvbnNlEhQKDHN0YXRpb25fbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoKZGVwYXJ0dXJlcxgDIAMoCzIRLnRmbS52MS5EZXBhcnR1cmUSFQoNbnJjY19tZXNzYWdlcxgEIAEoCSI4ChdHZXRUcmFpbkFycml2YWxzUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUiggEKGEdldFRyYWluQXJyaXZhbHNSZXNwb25zZRIUCgxzdGF0aW9uX25hbWUYASABKAkSFAoMZ2VuZXJhdGVkX2F0GAIgASgJEiMKCGFycml2YWxzGAMgAygLMhEudGZtLnYxLkRlcGFydHVyZRIVCg1ucmNjX21lc3NhZ2VzGAQgASgJIkcKEFN0YXRpb25Cb2FyZFRpbWUSEQoJc2NoZWR1bGVkGAEgASgJEhAKCGV4cGVjdGVkGAIgASgJEg4KBnN0YXR1cxgDIAEoCSKVAgoPU3RhdGlvbkJvYXJkUm93EhIKCnNlcnZpY2VfaWQYASABKAkSDgoGb3JpZ2luGAIgASgJEhMKC2Rlc3RpbmF0aW9uGAMgASgJEiUKA2FychgEIAEoCzIYLnRmbS52MS5TdGF0aW9uQm9hcmRUaW1lEiUKA2RlcBgFIAEoCzIYLnRmbS52MS5TdGF0aW9uQm9hcmRUaW1lEhAKCHBsYXRmb3JtGAYgASgJEhAKCG9wZXJhdG9yGAcgASgJEg8KB2lzX2xpdmUYCCABKAgSEwoLY29hY2hfY291bnQYCSABKAUSHgoHY29hY2hlcxgKIAMoCzINLnRmbS52MS5Db2FjaBIRCglzb3J0X3NlY3MYCyABKAUiNwoWR2V0U3RhdGlvbkJvYXJkUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUinwEKF0dldFN0YXRpb25Cb2FyZFJlc3BvbnNlEhQKDHN0YXRpb25fbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoEcm93cxgDIAMoCzIXLnRmbS52MS5TdGF0aW9uQm9hcmRSb3cSFQoNbnJjY19tZXNzYWdlcxgEIAEoCRIaChJhcnJpdmFsc19hdmFpbGFibGUYBSABKAgiZAoXR2V0QnVzRGVwYXJ0dXJlc1JlcXVlc3QSEQoJYXRjb19jb2RlGAEgASgJEhAKCG51bV9yb3dzGAIgASgFEhYKDmxvb2thaGVhZF9taW5zGAMgASgFEgwKBGRhdGUYBCABKAkifwoYR2V0QnVzRGVwYXJ0dXJlc1Jlc3BvbnNlEhEKCXN0b3BfbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoKZGVwYXJ0dXJlcxgDIAMoCzIRLnRmbS52MS5EZXBhcnR1cmUSEwoLaXNfcmVhbHRpbWUYBCABKAhCJAoTdWsub3JnLnRmbS5wcm90by52MUILQm9hcmRzUHJvdG9QAWIGcHJvdG8z");
+  fileDesc("ChN0Zm0vdjEvYm9hcmRzLnByb3RvEgZ0Zm0udjEiqQIKCURlcGFydHVyZRIWCg5zY2hlZHVsZWRfdGltZRgBIAEoCRIVCg1leHBlY3RlZF90aW1lGAIgASgJEhMKC2Rlc3RpbmF0aW9uGAMgASgJEhAKCG9wZXJhdG9yGAQgASgJEhcKD3BsYXRmb3JtX29yX2JheRgFIAEoCRIOCgZzdGF0dXMYBiABKAkSFQoNZGVsYXlfbWludXRlcxgHIAEoBRIPCgdpc19saXZlGAggASgIEhIKCnNlcnZpY2VfaWQYCSABKAkSDgoGb3JpZ2luGAogASgJEhMKC2NvYWNoX2NvdW50GAsgASgFEh4KB2NvYWNoZXMYDCADKAsyDS50Zm0udjEuQ29hY2gSDAoEbGluZRgNIAEoCRIOCgZub19ncHMYDiABKAgiZAoFQ29hY2gSDgoGbnVtYmVyGAEgASgJEhMKC2NvYWNoX2NsYXNzGAIgASgJEg8KB2xvYWRpbmcYAyABKAUSFQoNbG9hZGluZ19rbm93bhgEIAEoCBIOCgZ0b2lsZXQYBSABKAkiOgoZR2V0VHJhaW5EZXBhcnR1cmVzUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUihgEKGkdldFRyYWluRGVwYXJ0dXJlc1Jlc3BvbnNlEhQKDHN0YXRpb25fbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoKZGVwYXJ0dXJlcxgDIAMoCzIRLnRmbS52MS5EZXBhcnR1cmUSFQoNbnJjY19tZXNzYWdlcxgEIAEoCSI4ChdHZXRUcmFpbkFycml2YWxzUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUiggEKGEdldFRyYWluQXJyaXZhbHNSZXNwb25zZRIUCgxzdGF0aW9uX25hbWUYASABKAkSFAoMZ2VuZXJhdGVkX2F0GAIgASgJEiMKCGFycml2YWxzGAMgAygLMhEudGZtLnYxLkRlcGFydHVyZRIVCg1ucmNjX21lc3NhZ2VzGAQgASgJIkcKEFN0YXRpb25Cb2FyZFRpbWUSEQoJc2NoZWR1bGVkGAEgASgJEhAKCGV4cGVjdGVkGAIgASgJEg4KBnN0YXR1cxgDIAEoCSKVAgoPU3RhdGlvbkJvYXJkUm93EhIKCnNlcnZpY2VfaWQYASABKAkSDgoGb3JpZ2luGAIgASgJEhMKC2Rlc3RpbmF0aW9uGAMgASgJEiUKA2FychgEIAEoCzIYLnRmbS52MS5TdGF0aW9uQm9hcmRUaW1lEiUKA2RlcBgFIAEoCzIYLnRmbS52MS5TdGF0aW9uQm9hcmRUaW1lEhAKCHBsYXRmb3JtGAYgASgJEhAKCG9wZXJhdG9yGAcgASgJEg8KB2lzX2xpdmUYCCABKAgSEwoLY29hY2hfY291bnQYCSABKAUSHgoHY29hY2hlcxgKIAMoCzINLnRmbS52MS5Db2FjaBIRCglzb3J0X3NlY3MYCyABKAUiNwoWR2V0U3RhdGlvbkJvYXJkUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUinwEKF0dldFN0YXRpb25Cb2FyZFJlc3BvbnNlEhQKDHN0YXRpb25fbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoEcm93cxgDIAMoCzIXLnRmbS52MS5TdGF0aW9uQm9hcmRSb3cSFQoNbnJjY19tZXNzYWdlcxgEIAEoCRIaChJhcnJpdmFsc19hdmFpbGFibGUYBSABKAgiSAoSR2V0QnVzQm9hcmRSZXF1ZXN0EhIKCmF0Y29fY29kZXMYASADKAkSEAoIbnVtX3Jvd3MYAiABKAUSDAoEZGF0ZRgDIAEoCSJfChFCdXNCb2FyZERlcGFydHVyZRIkCglkZXBhcnR1cmUYASABKAsyES50Zm0udjEuRGVwYXJ0dXJlEhEKCWF0Y29fY29kZRgCIAEoCRIRCglzdG9wX25hbWUYAyABKAkijQEKE0dldEJ1c0JvYXJkUmVzcG9uc2USFAoMZ2VuZXJhdGVkX2F0GAEgASgJEi0KCmRlcGFydHVyZXMYAiADKAsyGS50Zm0udjEuQnVzQm9hcmREZXBhcnR1cmUSEQoJdHJ1bmNhdGVkGAMgASgIEh4KFnVuYXZhaWxhYmxlX2F0Y29fY29kZXMYBCADKAkiZAoXR2V0QnVzRGVwYXJ0dXJlc1JlcXVlc3QSEQoJYXRjb19jb2RlGAEgASgJEhAKCG51bV9yb3dzGAIgASgFEhYKDmxvb2thaGVhZF9taW5zGAMgASgFEgwKBGRhdGUYBCABKAkifwoYR2V0QnVzRGVwYXJ0dXJlc1Jlc3BvbnNlEhEKCXN0b3BfbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoKZGVwYXJ0dXJlcxgDIAMoCzIRLnRmbS52MS5EZXBhcnR1cmUSEwoLaXNfcmVhbHRpbWUYBCABKAhCJAoTdWsub3JnLnRmbS5wcm90by52MUILQm9hcmRzUHJvdG9QAWIGcHJvdG8z");
 
 /**
  * A single departure row, shared by both the train and bus boards.
@@ -457,6 +457,104 @@ export const GetStationBoardResponseSchema: GenMessage<GetStationBoardResponse> 
   messageDesc(file_tfm_v1_boards, 9);
 
 /**
+ * Explicitly selected stops, not an inferred geographic cluster.
+ *
+ * @generated from message tfm.v1.GetBusBoardRequest
+ */
+export type GetBusBoardRequest = Message<"tfm.v1.GetBusBoardRequest"> & {
+  /**
+   * One to fifty distinct NaPTAN ATCO codes. Request order breaks ties between equal-time calls.
+   *
+   * @generated from field: repeated string atco_codes = 1;
+   */
+  atcoCodes: string[];
+
+  /**
+   * Upcoming: 0 = next 14 rows. With date set: 0 = full day. Positive values must be between 1 and 100.
+   *
+   * @generated from field: int32 num_rows = 2;
+   */
+  numRows: number;
+
+  /**
+   * Empty = upcoming departures; otherwise a calendar date, yyyy-MM-dd, in Europe/London.
+   *
+   * @generated from field: string date = 3;
+   */
+  date: string;
+};
+
+/**
+ * Describes the message tfm.v1.GetBusBoardRequest.
+ * Use `create(GetBusBoardRequestSchema)` to create a new message.
+ */
+export const GetBusBoardRequestSchema: GenMessage<GetBusBoardRequest> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_boards, 10);
+
+/**
+ * @generated from message tfm.v1.BusBoardDeparture
+ */
+export type BusBoardDeparture = Message<"tfm.v1.BusBoardDeparture"> & {
+  /**
+   * @generated from field: tfm.v1.Departure departure = 1;
+   */
+  departure?: Departure | undefined;
+
+  /**
+   * @generated from field: string atco_code = 2;
+   */
+  atcoCode: string;
+
+  /**
+   * @generated from field: string stop_name = 3;
+   */
+  stopName: string;
+};
+
+/**
+ * Describes the message tfm.v1.BusBoardDeparture.
+ * Use `create(BusBoardDepartureSchema)` to create a new message.
+ */
+export const BusBoardDepartureSchema: GenMessage<BusBoardDeparture> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_boards, 11);
+
+/**
+ * @generated from message tfm.v1.GetBusBoardResponse
+ */
+export type GetBusBoardResponse = Message<"tfm.v1.GetBusBoardResponse"> & {
+  /**
+   * @generated from field: string generated_at = 1;
+   */
+  generatedAt: string;
+
+  /**
+   * One row per identified trip, at its earliest selected stop; unidentified rows stay separate.
+   *
+   * @generated from field: repeated tfm.v1.BusBoardDeparture departures = 2;
+   */
+  departures: BusBoardDeparture[];
+
+  /**
+   * @generated from field: bool truncated = 3;
+   */
+  truncated: boolean;
+
+  /**
+   * Stops whose timetable queries failed. Non-empty means this is a partial board.
+   *
+   * @generated from field: repeated string unavailable_atco_codes = 4;
+   */
+  unavailableAtcoCodes: string[];
+};
+
+/**
+ * Describes the message tfm.v1.GetBusBoardResponse.
+ * Use `create(GetBusBoardResponseSchema)` to create a new message.
+ */
+export const GetBusBoardResponseSchema: GenMessage<GetBusBoardResponse> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_boards, 12);
+
+/**
  * @generated from message tfm.v1.GetBusDeparturesRequest
  */
 export type GetBusDeparturesRequest = Message<"tfm.v1.GetBusDeparturesRequest"> & {
@@ -494,7 +592,7 @@ export type GetBusDeparturesRequest = Message<"tfm.v1.GetBusDeparturesRequest"> 
  * Use `create(GetBusDeparturesRequestSchema)` to create a new message.
  */
 export const GetBusDeparturesRequestSchema: GenMessage<GetBusDeparturesRequest> = /*@__PURE__*/
-  messageDesc(file_tfm_v1_boards, 10);
+  messageDesc(file_tfm_v1_boards, 13);
 
 /**
  * @generated from message tfm.v1.GetBusDeparturesResponse
@@ -528,5 +626,5 @@ export type GetBusDeparturesResponse = Message<"tfm.v1.GetBusDeparturesResponse"
  * Use `create(GetBusDeparturesResponseSchema)` to create a new message.
  */
 export const GetBusDeparturesResponseSchema: GenMessage<GetBusDeparturesResponse> = /*@__PURE__*/
-  messageDesc(file_tfm_v1_boards, 11);
+  messageDesc(file_tfm_v1_boards, 14);
 

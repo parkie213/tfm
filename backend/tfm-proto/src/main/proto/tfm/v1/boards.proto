@@ -126,6 +126,31 @@ message GetStationBoardResponse {
 
 // ----- Buses (BODS GTFS) -----
 
+// Explicitly selected stops, not an inferred geographic cluster.
+message GetBusBoardRequest {
+  // One to fifty distinct NaPTAN ATCO codes. Request order breaks ties between equal-time calls.
+  repeated string atco_codes = 1;
+  // Upcoming: 0 = next 14 rows. With date set: 0 = full day. Positive values must be between 1 and 100.
+  int32 num_rows = 2;
+  // Empty = upcoming departures; otherwise a calendar date, yyyy-MM-dd, in Europe/London.
+  string date = 3;
+}
+
+message BusBoardDeparture {
+  Departure departure = 1;
+  string atco_code = 2;
+  string stop_name = 3;
+}
+
+message GetBusBoardResponse {
+  string generated_at = 1;
+  // One row per identified trip, at its earliest selected stop; unidentified rows stay separate.
+  repeated BusBoardDeparture departures = 2;
+  bool truncated = 3;
+  // Stops whose timetable queries failed. Non-empty means this is a partial board.
+  repeated string unavailable_atco_codes = 4;
+}
+
 message GetBusDeparturesRequest {
   // NaPTAN ATCO stop code.
   string atco_code = 1;
