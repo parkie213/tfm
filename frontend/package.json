@@ -21,7 +21,7 @@
     "react-map-gl": "^8.1.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.7",
+    "@babel/core": "^8.0.10",
     "@bufbuild/buf": "^1.70.0",
     "@bufbuild/protoc-gen-es": "^2.0.0",
     "@rolldown/plugin-babel": "^0.2.3",
