@@ -11,6 +11,7 @@ import {
   type UseCombinedBusDeparturesResult,
 } from '../hooks/useTownCentreBuses'
 import { standCode } from '../lib/stopGrouping'
+import { trainStatus } from '../lib/trainStatus'
 import { useKioskStops } from '../hooks/useKioskStops'
 import { KioskStopPicker } from '../components/KioskStopPicker'
 import { useShopLocation, geocodeAddress, GeocodeError, type ShopLocation } from '../hooks/useShopLocation'
@@ -52,12 +53,6 @@ function busPunctuality(d: Departure): { text: string; tone: 'on' | 'late' | 'ea
   return { text: 'on time', tone: 'on' }
 }
 
-function trainStatus(d: Departure): { text: string; tone: 'on' | 'late' | 'cancelled' } {
-  const s = d.status.toLowerCase()
-  if (s === 'cancelled') return { text: 'Cancelled', tone: 'cancelled' }
-  if (d.delayMinutes > 0) return { text: `${d.delayMinutes} min late`, tone: 'late' }
-  return { text: 'On time', tone: 'on' }
-}
 
 const toneClass: Record<string, string> = {
   on: styles.pillOn,
