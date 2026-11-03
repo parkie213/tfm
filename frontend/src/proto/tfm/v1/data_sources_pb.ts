@@ -126,7 +126,7 @@ export const GetDataSourcesResponseSchema: GenMessage<GetDataSourcesResponse> = 
 
 /**
  * The operational state of a feed. The page shows the *real* state — a dormant/unkeyed source reads
- * DISABLED, a scaffolded-but-not-surfaced feed reads SCAFFOLDED, a baked artifact reads LIVE+static.
+ * DISABLED, a configured feed with no data yet reads SCAFFOLDED, a baked artifact reads LIVE+static.
  *
  * @generated from enum tfm.v1.DataSourceStatus
  */
@@ -144,7 +144,7 @@ export enum DataSourceStatus {
   LIVE = 1,
 
   /**
-   * wired/connected but not yet surfaced
+   * configured, but no data received/loaded yet
    *
    * @generated from enum value: DATA_SOURCE_STATUS_SCAFFOLDED = 2;
    */

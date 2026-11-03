@@ -85,6 +85,45 @@ message GetTrainArrivalsResponse {
   string nrcc_messages = 4;
 }
 
+// Combined station board: one row per identified service, with either or both time sides.
+message StationBoardTime {
+  string scheduled = 1;
+  string expected = 2;
+  string status = 3;
+}
+
+message StationBoardRow {
+  string service_id = 1;
+  string origin = 2;
+  string destination = 3;
+  // Absent when this board has no arrival/departure for the service.
+  StationBoardTime arr = 4;
+  StationBoardTime dep = 5;
+  string platform = 6;
+  string operator = 7;
+  bool is_live = 8;
+  int32 coach_count = 9;
+  repeated Coach coaches = 10;
+  // Scheduled departure seconds since midnight, or arrival for an arrival-only row.
+  // Unknown times sort last. This preserves the existing station-board ordering.
+  int32 sort_secs = 11;
+}
+
+message GetStationBoardRequest {
+  string crs = 1;
+  // Maximum rows requested from each upstream board; 0 = server default.
+  int32 num_rows = 2;
+}
+
+message GetStationBoardResponse {
+  string station_name = 1;
+  string generated_at = 2;
+  repeated StationBoardRow rows = 3;
+  string nrcc_messages = 4;
+  // False when the optional arrivals product is absent or its current request failed.
+  bool arrivals_available = 5;
+}
+
 // ----- Buses (BODS GTFS) -----
 
 message GetBusDeparturesRequest {

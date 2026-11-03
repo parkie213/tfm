@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ConnectError, Code } from '@connectrpc/connect'
-import type { GetTrainDeparturesResponse, GetTrainArrivalsResponse, GetBusDeparturesResponse, Departure, Coach } from '../proto/tfm/v1/boards_pb'
+import type { GetTrainDeparturesResponse, GetBusDeparturesResponse, GetStationBoardResponse, StationBoardRow } from '../proto/tfm/v1/boards_pb'
 import type { GetServiceStopsResponse } from '../proto/tfm/v1/routes_pb'
 import { client } from '../transport'
 import { MELTON_MOWBRAY_CRS } from '../constants/stops'
@@ -9,15 +9,6 @@ import { useServerStream } from './useServerStream'
 export interface UseDeparturesResult {
   data: GetTrainDeparturesResponse | null
   error: string | null
-  loading: boolean
-  lastUpdated: Date | null
-}
-
-export interface UseArrivalsResult {
-  data: GetTrainArrivalsResponse | null
-  error: string | null
-  /** true when the server has not yet implemented arrivals (gRPC UNIMPLEMENTED) */
-  unimplemented: boolean
   loading: boolean
   lastUpdated: Date | null
 }
@@ -46,44 +37,9 @@ export function useTrainDepartures(crs: string = MELTON_MOWBRAY_CRS): UseDepartu
   return { data, error, loading: loading && !error, lastUpdated }
 }
 
-export function useTrainArrivals(crs: string = MELTON_MOWBRAY_CRS): UseArrivalsResult {
-  const [data, setData] = useState<GetTrainArrivalsResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
-
-  const { unavailable } = useServerStream<GetTrainArrivalsResponse>({
-    enabled: true,
-    deps: [crs],
-    makeStream: (signal) => client.streamTrainArrivals({ crs, numRows: 15 }, { signal }),
-    onReset: () => setLoading(true),
-    onMessage: (resp) => {
-      setData(resp)
-      setLoading(false)
-      setLastUpdated(new Date())
-    },
-  })
-
-  // UNIMPLEMENTED (arrivals product not configured) → stop showing a skeleton; the station board
-  // degrades to departures-only.
-  return { data, error: null, unimplemented: unavailable, loading: loading && !unavailable, lastUpdated }
-}
-
 // ----- Unified station board (departures + arrivals merged per service) -----
 
-/** One service at the station: a single row carrying its arrival and/or departure side. */
-export interface StationBoardRow {
-  serviceId: string
-  origin: string // where the service started ("" if it originates here)
-  destination: string // where it ends ("" if it terminates here)
-  arr: { scheduled: string; expected: string; status: string } | null // null = doesn't arrive here (originates)
-  dep: { scheduled: string; expected: string; status: string } | null // null = doesn't depart here (terminates)
-  platform: string
-  operator: string
-  isLive: boolean
-  coachCount: number
-  coaches: Coach[]
-  sortSecs: number
-}
+export type { StationBoardRow } from '../proto/tfm/v1/boards_pb'
 
 export interface UseStationBoardResult {
   rows: StationBoardRow[]
@@ -101,79 +57,30 @@ export function hhmmSecs(hhmm: string): number {
   return m ? Number(m[1]) * 3600 + Number(m[2]) * 60 : Number.MAX_SAFE_INTEGER
 }
 
-/** Joins a service's departure and arrival sides (keyed on serviceId). */
-function rowKey(d: Departure): string {
-  return d.serviceId || `${d.scheduledTime}|${d.destination || d.origin}`
-}
-
-/**
- * Merges the separate train departures + arrivals boards into one row per service. At a through
- * station a service has both an arrival and a departure (shown side by side); one that terminates
- * here shows arrival-only, one that originates here departure-only. Resilient to arrivals being
- * unimplemented (code 12) — degrades to a departures-only board.
- */
+/** Subscribes to the combined station board assembled by the Java backend. */
 export function useStationBoard(crs: string = MELTON_MOWBRAY_CRS): UseStationBoardResult {
-  const departures = useTrainDepartures(crs)
-  const arrivals = useTrainArrivals(crs)
-
-  const rows = useMemo<StationBoardRow[]>(() => {
-    const byKey = new Map<string, StationBoardRow>()
-
-    for (const d of departures.data?.departures ?? []) {
-      const k = rowKey(d)
-      byKey.set(k, {
-        serviceId: d.serviceId,
-        origin: d.origin,
-        destination: d.destination,
-        arr: null,
-        dep: { scheduled: d.scheduledTime, expected: d.expectedTime, status: d.status },
-        platform: d.platformOrBay,
-        operator: d.operator,
-        isLive: d.isLive,
-        coachCount: d.coachCount,
-        coaches: d.coaches,
-        sortSecs: hhmmSecs(d.scheduledTime),
-      })
-    }
-
-    for (const a of arrivals.data?.arrivals ?? []) {
-      const k = rowKey(a)
-      const arr = { scheduled: a.scheduledTime, expected: a.expectedTime, status: a.status }
-      const existing = byKey.get(k)
-      if (existing) {
-        existing.arr = arr
-        if (!existing.origin) existing.origin = a.origin
-        existing.platform = existing.platform || a.platformOrBay
-        existing.operator = existing.operator || a.operator
-        existing.isLive = existing.isLive || a.isLive
-        if (existing.coaches.length === 0 && a.coaches.length > 0) existing.coaches = a.coaches
-        if (existing.coachCount === 0) existing.coachCount = a.coachCount
-      } else {
-        byKey.set(k, {
-          serviceId: a.serviceId,
-          origin: a.origin,
-          destination: a.destination, // empty for a terminating service
-          arr,
-          dep: null,
-          platform: a.platformOrBay,
-          operator: a.operator,
-          isLive: a.isLive,
-          coachCount: a.coachCount,
-          coaches: a.coaches,
-          sortSecs: hhmmSecs(a.scheduledTime),
-        })
-      }
-    }
-
-    return [...byKey.values()].sort((x, y) => x.sortSecs - y.sortSecs)
-  }, [departures.data, arrivals.data])
-
+  const [data, setData] = useState<GetStationBoardResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const { error: streamError, unavailable } = useServerStream<GetStationBoardResponse>({
+    enabled: true,
+    deps: [crs],
+    makeStream: (signal) => client.streamStationBoard({ crs, numRows: 15 }, { signal }),
+    onReset: () => {
+      setData(null)
+      setLoading(true)
+    },
+    onMessage: (response) => {
+      setData(response)
+      setLoading(false)
+    },
+  })
+  const error = unavailable ? 'Train departures are not configured.' : streamError
   return {
-    rows,
-    stationName: departures.data?.stationName ?? arrivals.data?.stationName ?? '',
-    nrccMessages: departures.data?.nrccMessages ?? '',
-    loading: departures.loading,
-    error: departures.error,
+    rows: data?.rows ?? [],
+    stationName: data?.stationName ?? '',
+    nrccMessages: data?.nrccMessages ?? '',
+    loading: loading && !error,
+    error,
   }
 }
 

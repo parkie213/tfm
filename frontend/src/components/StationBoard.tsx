@@ -31,7 +31,6 @@ export function StationBoard({ rows, nrccMessages, title, crs, onSelectTrainServ
   const arrivals = rows
     .filter((r) => r.arr)
     .sort((a, b) => hhmmSecs(a.arr!.scheduled) - hhmmSecs(b.arr!.scheduled))
-  const merged = [...rows].sort((a, b) => a.sortSecs - b.sortSecs)
   const hasScheduledRows = rows.length > 0 && rows.some((r) => !r.isLive)
 
   return (
@@ -71,7 +70,7 @@ export function StationBoard({ rows, nrccMessages, title, crs, onSelectTrainServ
           <p className={styles.emptySub}>All quiet for now — check back shortly.</p>
         </div>
       ) : combined ? (
-        <CombinedTable rows={merged} crs={crs} onSelectTrainService={onSelectTrainService} />
+        <CombinedTable rows={rows} crs={crs} onSelectTrainService={onSelectTrainService} />
       ) : (
         <>
           <BoardSection

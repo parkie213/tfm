@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.org.tfm.proto.v1.GetBusDeparturesRequest;
 import uk.org.tfm.proto.v1.GetBusDeparturesResponse;
+import uk.org.tfm.proto.v1.GetStationBoardRequest;
+import uk.org.tfm.proto.v1.GetStationBoardResponse;
 import uk.org.tfm.proto.v1.GetTrainArrivalsRequest;
 import uk.org.tfm.proto.v1.GetTrainArrivalsResponse;
 import uk.org.tfm.proto.v1.GetTrainDeparturesRequest;
@@ -31,12 +33,18 @@ public final class BoardStreamService {
   private static final String DEFAULT_CRS = "MMO"; // Melton Mowbray
   private static final long REFRESH_SECONDS = 15;
 
+  private final BroadcastHub<GetStationBoardRequest, GetStationBoardResponse> stationBoard;
   private final BroadcastHub<GetTrainDeparturesRequest, GetTrainDeparturesResponse> trainDep;
   private final BroadcastHub<GetTrainArrivalsRequest, GetTrainArrivalsResponse> trainArr;
   private final BroadcastHub<GetBusDeparturesRequest, GetBusDeparturesResponse> busDep;
 
   @Inject
-  public BoardStreamService(TrainBoardService trains, BusTimetableService timetables) {
+  public BoardStreamService(
+      TrainBoardService trains, BusTimetableService timetables, StationBoardService stations) {
+    this.stationBoard =
+        new BroadcastHub<>(
+            "station-board",
+            req -> List.of(stations.getBoard(crs(req.getCrs()), req.getNumRows())));
     // Train boards: cached in TrainBoardService, so re-querying per refresh hits Darwin at most
     // once
     // per cache TTL. A Darwin hiccup throws → the hub skips the frame and the client keeps its last
@@ -69,6 +77,7 @@ public final class BoardStreamService {
   }
 
   public void start() {
+    stationBoard.startPeriodic(REFRESH_SECONDS);
     trainDep.startPeriodic(REFRESH_SECONDS);
     trainArr.startPeriodic(REFRESH_SECONDS);
     busDep.startPeriodic(REFRESH_SECONDS);
@@ -76,9 +85,15 @@ public final class BoardStreamService {
   }
 
   public void stop() {
+    stationBoard.shutdown();
     trainDep.shutdown();
     trainArr.shutdown();
     busDep.shutdown();
+  }
+
+  public void subscribeStationBoard(
+      StreamObserver<GetStationBoardResponse> obs, GetStationBoardRequest req) {
+    stationBoard.subscribe(obs, req);
   }
 
   public void subscribeTrainDepartures(

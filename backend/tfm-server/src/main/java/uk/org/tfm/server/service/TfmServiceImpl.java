@@ -20,6 +20,8 @@ import uk.org.tfm.proto.v1.GetRouteShapesInViewportResponse;
 import uk.org.tfm.proto.v1.GetRouteStopsRequest;
 import uk.org.tfm.proto.v1.GetServiceStopsRequest;
 import uk.org.tfm.proto.v1.GetServiceStopsResponse;
+import uk.org.tfm.proto.v1.GetStationBoardRequest;
+import uk.org.tfm.proto.v1.GetStationBoardResponse;
 import uk.org.tfm.proto.v1.GetStationPlatformsRequest;
 import uk.org.tfm.proto.v1.GetStationPlatformsResponse;
 import uk.org.tfm.proto.v1.GetStopsInViewportRequest;
@@ -45,6 +47,7 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
   private static final String DEFAULT_CRS = "MMO"; // Melton Mowbray
 
   private final TrainBoardService trains;
+  private final StationBoardService stationBoards;
   private final BusVehicleService busVehicles;
   private final BoardStreamService boardStreams;
   private final BusTimetableService timetables;
@@ -58,6 +61,7 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
   @Inject
   public TfmServiceImpl(
       TrainBoardService trains,
+      StationBoardService stationBoards,
       BusVehicleService busVehicles,
       BoardStreamService boardStreams,
       BusTimetableService timetables,
@@ -68,6 +72,7 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
       Config config,
       DataSourceRegistry dataSourceRegistry) {
     this.trains = trains;
+    this.stationBoards = stationBoards;
     this.busVehicles = busVehicles;
     this.boardStreams = boardStreams;
     this.timetables = timetables;
@@ -77,6 +82,39 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     this.platforms = platforms;
     this.busMap = busMap;
     this.dataSourceRegistry = dataSourceRegistry;
+  }
+
+  @Override
+  public void getStationBoard(
+      GetStationBoardRequest request, StreamObserver<GetStationBoardResponse> observer) {
+    if (!stationBoardsConfigured(observer)) return;
+    String crs = request.getCrs().isBlank() ? DEFAULT_CRS : request.getCrs().trim().toUpperCase();
+    try {
+      observer.onNext(stationBoards.getBoard(crs, request.getNumRows()));
+      observer.onCompleted();
+    } catch (RuntimeException e) {
+      log.warn("Station board failed for crs={}", crs, e);
+      observer.onError(
+          Status.UNAVAILABLE
+              .withDescription("Station board unavailable.")
+              .withCause(e)
+              .asRuntimeException());
+    }
+  }
+
+  @Override
+  public void streamStationBoard(
+      GetStationBoardRequest request, StreamObserver<GetStationBoardResponse> observer) {
+    if (stationBoardsConfigured(observer)) boardStreams.subscribeStationBoard(observer, request);
+  }
+
+  private boolean stationBoardsConfigured(StreamObserver<GetStationBoardResponse> observer) {
+    if (!config.darwinToken().isBlank()) return true;
+    observer.onError(
+        Status.UNIMPLEMENTED
+            .withDescription("Train departures are not configured.")
+            .asRuntimeException());
+    return false;
   }
 
   @Override

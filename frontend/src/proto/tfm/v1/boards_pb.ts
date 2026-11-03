@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tfm/v1/boards.proto.
  */
 export const file_tfm_v1_boards: GenFile = /*@__PURE__*/
-  fileDesc("ChN0Zm0vdjEvYm9hcmRzLnByb3RvEgZ0Zm0udjEiqQIKCURlcGFydHVyZRIWCg5zY2hlZHVsZWRfdGltZRgBIAEoCRIVCg1leHBlY3RlZF90aW1lGAIgASgJEhMKC2Rlc3RpbmF0aW9uGAMgASgJEhAKCG9wZXJhdG9yGAQgASgJEhcKD3BsYXRmb3JtX29yX2JheRgFIAEoCRIOCgZzdGF0dXMYBiABKAkSFQoNZGVsYXlfbWludXRlcxgHIAEoBRIPCgdpc19saXZlGAggASgIEhIKCnNlcnZpY2VfaWQYCSABKAkSDgoGb3JpZ2luGAogASgJEhMKC2NvYWNoX2NvdW50GAsgASgFEh4KB2NvYWNoZXMYDCADKAsyDS50Zm0udjEuQ29hY2gSDAoEbGluZRgNIAEoCRIOCgZub19ncHMYDiABKAgiZAoFQ29hY2gSDgoGbnVtYmVyGAEgASgJEhMKC2NvYWNoX2NsYXNzGAIgASgJEg8KB2xvYWRpbmcYAyABKAUSFQoNbG9hZGluZ19rbm93bhgEIAEoCBIOCgZ0b2lsZXQYBSABKAkiOgoZR2V0VHJhaW5EZXBhcnR1cmVzUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUihgEKGkdldFRyYWluRGVwYXJ0dXJlc1Jlc3BvbnNlEhQKDHN0YXRpb25fbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoKZGVwYXJ0dXJlcxgDIAMoCzIRLnRmbS52MS5EZXBhcnR1cmUSFQoNbnJjY19tZXNzYWdlcxgEIAEoCSI4ChdHZXRUcmFpbkFycml2YWxzUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUiggEKGEdldFRyYWluQXJyaXZhbHNSZXNwb25zZRIUCgxzdGF0aW9uX25hbWUYASABKAkSFAoMZ2VuZXJhdGVkX2F0GAIgASgJEiMKCGFycml2YWxzGAMgAygLMhEudGZtLnYxLkRlcGFydHVyZRIVCg1ucmNjX21lc3NhZ2VzGAQgASgJImQKF0dldEJ1c0RlcGFydHVyZXNSZXF1ZXN0EhEKCWF0Y29fY29kZRgBIAEoCRIQCghudW1fcm93cxgCIAEoBRIWCg5sb29rYWhlYWRfbWlucxgDIAEoBRIMCgRkYXRlGAQgASgJIn8KGEdldEJ1c0RlcGFydHVyZXNSZXNwb25zZRIRCglzdG9wX25hbWUYASABKAkSFAoMZ2VuZXJhdGVkX2F0GAIgASgJEiUKCmRlcGFydHVyZXMYAyADKAsyES50Zm0udjEuRGVwYXJ0dXJlEhMKC2lzX3JlYWx0aW1lGAQgASgIQiQKE3VrLm9yZy50Zm0ucHJvdG8udjFCC0JvYXJkc1Byb3RvUAFiBnByb3RvMw");
+  fileDesc("ChN0Zm0vdjEvYm9hcmRzLnByb3RvEgZ0Zm0udjEiqQIKCURlcGFydHVyZRIWCg5zY2hlZHVsZWRfdGltZRgBIAEoCRIVCg1leHBlY3RlZF90aW1lGAIgASgJEhMKC2Rlc3RpbmF0aW9uGAMgASgJEhAKCG9wZXJhdG9yGAQgASgJEhcKD3BsYXRmb3JtX29yX2JheRgFIAEoCRIOCgZzdGF0dXMYBiABKAkSFQoNZGVsYXlfbWludXRlcxgHIAEoBRIPCgdpc19saXZlGAggASgIEhIKCnNlcnZpY2VfaWQYCSABKAkSDgoGb3JpZ2luGAogASgJEhMKC2NvYWNoX2NvdW50GAsgASgFEh4KB2NvYWNoZXMYDCADKAsyDS50Zm0udjEuQ29hY2gSDAoEbGluZRgNIAEoCRIOCgZub19ncHMYDiABKAgiZAoFQ29hY2gSDgoGbnVtYmVyGAEgASgJEhMKC2NvYWNoX2NsYXNzGAIgASgJEg8KB2xvYWRpbmcYAyABKAUSFQoNbG9hZGluZ19rbm93bhgEIAEoCBIOCgZ0b2lsZXQYBSABKAkiOgoZR2V0VHJhaW5EZXBhcnR1cmVzUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUihgEKGkdldFRyYWluRGVwYXJ0dXJlc1Jlc3BvbnNlEhQKDHN0YXRpb25fbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoKZGVwYXJ0dXJlcxgDIAMoCzIRLnRmbS52MS5EZXBhcnR1cmUSFQoNbnJjY19tZXNzYWdlcxgEIAEoCSI4ChdHZXRUcmFpbkFycml2YWxzUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUiggEKGEdldFRyYWluQXJyaXZhbHNSZXNwb25zZRIUCgxzdGF0aW9uX25hbWUYASABKAkSFAoMZ2VuZXJhdGVkX2F0GAIgASgJEiMKCGFycml2YWxzGAMgAygLMhEudGZtLnYxLkRlcGFydHVyZRIVCg1ucmNjX21lc3NhZ2VzGAQgASgJIkcKEFN0YXRpb25Cb2FyZFRpbWUSEQoJc2NoZWR1bGVkGAEgASgJEhAKCGV4cGVjdGVkGAIgASgJEg4KBnN0YXR1cxgDIAEoCSKVAgoPU3RhdGlvbkJvYXJkUm93EhIKCnNlcnZpY2VfaWQYASABKAkSDgoGb3JpZ2luGAIgASgJEhMKC2Rlc3RpbmF0aW9uGAMgASgJEiUKA2FychgEIAEoCzIYLnRmbS52MS5TdGF0aW9uQm9hcmRUaW1lEiUKA2RlcBgFIAEoCzIYLnRmbS52MS5TdGF0aW9uQm9hcmRUaW1lEhAKCHBsYXRmb3JtGAYgASgJEhAKCG9wZXJhdG9yGAcgASgJEg8KB2lzX2xpdmUYCCABKAgSEwoLY29hY2hfY291bnQYCSABKAUSHgoHY29hY2hlcxgKIAMoCzINLnRmbS52MS5Db2FjaBIRCglzb3J0X3NlY3MYCyABKAUiNwoWR2V0U3RhdGlvbkJvYXJkUmVxdWVzdBILCgNjcnMYASABKAkSEAoIbnVtX3Jvd3MYAiABKAUinwEKF0dldFN0YXRpb25Cb2FyZFJlc3BvbnNlEhQKDHN0YXRpb25fbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoEcm93cxgDIAMoCzIXLnRmbS52MS5TdGF0aW9uQm9hcmRSb3cSFQoNbnJjY19tZXNzYWdlcxgEIAEoCRIaChJhcnJpdmFsc19hdmFpbGFibGUYBSABKAgiZAoXR2V0QnVzRGVwYXJ0dXJlc1JlcXVlc3QSEQoJYXRjb19jb2RlGAEgASgJEhAKCG51bV9yb3dzGAIgASgFEhYKDmxvb2thaGVhZF9taW5zGAMgASgFEgwKBGRhdGUYBCABKAkifwoYR2V0QnVzRGVwYXJ0dXJlc1Jlc3BvbnNlEhEKCXN0b3BfbmFtZRgBIAEoCRIUCgxnZW5lcmF0ZWRfYXQYAiABKAkSJQoKZGVwYXJ0dXJlcxgDIAMoCzIRLnRmbS52MS5EZXBhcnR1cmUSEwoLaXNfcmVhbHRpbWUYBCABKAhCJAoTdWsub3JnLnRmbS5wcm90by52MUILQm9hcmRzUHJvdG9QAWIGcHJvdG8z");
 
 /**
  * A single departure row, shared by both the train and bus boards.
@@ -293,6 +293,170 @@ export const GetTrainArrivalsResponseSchema: GenMessage<GetTrainArrivalsResponse
   messageDesc(file_tfm_v1_boards, 5);
 
 /**
+ * Combined station board: one row per identified service, with either or both time sides.
+ *
+ * @generated from message tfm.v1.StationBoardTime
+ */
+export type StationBoardTime = Message<"tfm.v1.StationBoardTime"> & {
+  /**
+   * @generated from field: string scheduled = 1;
+   */
+  scheduled: string;
+
+  /**
+   * @generated from field: string expected = 2;
+   */
+  expected: string;
+
+  /**
+   * @generated from field: string status = 3;
+   */
+  status: string;
+};
+
+/**
+ * Describes the message tfm.v1.StationBoardTime.
+ * Use `create(StationBoardTimeSchema)` to create a new message.
+ */
+export const StationBoardTimeSchema: GenMessage<StationBoardTime> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_boards, 6);
+
+/**
+ * @generated from message tfm.v1.StationBoardRow
+ */
+export type StationBoardRow = Message<"tfm.v1.StationBoardRow"> & {
+  /**
+   * @generated from field: string service_id = 1;
+   */
+  serviceId: string;
+
+  /**
+   * @generated from field: string origin = 2;
+   */
+  origin: string;
+
+  /**
+   * @generated from field: string destination = 3;
+   */
+  destination: string;
+
+  /**
+   * Absent when this board has no arrival/departure for the service.
+   *
+   * @generated from field: tfm.v1.StationBoardTime arr = 4;
+   */
+  arr?: StationBoardTime | undefined;
+
+  /**
+   * @generated from field: tfm.v1.StationBoardTime dep = 5;
+   */
+  dep?: StationBoardTime | undefined;
+
+  /**
+   * @generated from field: string platform = 6;
+   */
+  platform: string;
+
+  /**
+   * @generated from field: string operator = 7;
+   */
+  operator: string;
+
+  /**
+   * @generated from field: bool is_live = 8;
+   */
+  isLive: boolean;
+
+  /**
+   * @generated from field: int32 coach_count = 9;
+   */
+  coachCount: number;
+
+  /**
+   * @generated from field: repeated tfm.v1.Coach coaches = 10;
+   */
+  coaches: Coach[];
+
+  /**
+   * Scheduled departure seconds since midnight, or arrival for an arrival-only row.
+   * Unknown times sort last. This preserves the existing station-board ordering.
+   *
+   * @generated from field: int32 sort_secs = 11;
+   */
+  sortSecs: number;
+};
+
+/**
+ * Describes the message tfm.v1.StationBoardRow.
+ * Use `create(StationBoardRowSchema)` to create a new message.
+ */
+export const StationBoardRowSchema: GenMessage<StationBoardRow> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_boards, 7);
+
+/**
+ * @generated from message tfm.v1.GetStationBoardRequest
+ */
+export type GetStationBoardRequest = Message<"tfm.v1.GetStationBoardRequest"> & {
+  /**
+   * @generated from field: string crs = 1;
+   */
+  crs: string;
+
+  /**
+   * Maximum rows requested from each upstream board; 0 = server default.
+   *
+   * @generated from field: int32 num_rows = 2;
+   */
+  numRows: number;
+};
+
+/**
+ * Describes the message tfm.v1.GetStationBoardRequest.
+ * Use `create(GetStationBoardRequestSchema)` to create a new message.
+ */
+export const GetStationBoardRequestSchema: GenMessage<GetStationBoardRequest> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_boards, 8);
+
+/**
+ * @generated from message tfm.v1.GetStationBoardResponse
+ */
+export type GetStationBoardResponse = Message<"tfm.v1.GetStationBoardResponse"> & {
+  /**
+   * @generated from field: string station_name = 1;
+   */
+  stationName: string;
+
+  /**
+   * @generated from field: string generated_at = 2;
+   */
+  generatedAt: string;
+
+  /**
+   * @generated from field: repeated tfm.v1.StationBoardRow rows = 3;
+   */
+  rows: StationBoardRow[];
+
+  /**
+   * @generated from field: string nrcc_messages = 4;
+   */
+  nrccMessages: string;
+
+  /**
+   * False when the optional arrivals product is absent or its current request failed.
+   *
+   * @generated from field: bool arrivals_available = 5;
+   */
+  arrivalsAvailable: boolean;
+};
+
+/**
+ * Describes the message tfm.v1.GetStationBoardResponse.
+ * Use `create(GetStationBoardResponseSchema)` to create a new message.
+ */
+export const GetStationBoardResponseSchema: GenMessage<GetStationBoardResponse> = /*@__PURE__*/
+  messageDesc(file_tfm_v1_boards, 9);
+
+/**
  * @generated from message tfm.v1.GetBusDeparturesRequest
  */
 export type GetBusDeparturesRequest = Message<"tfm.v1.GetBusDeparturesRequest"> & {
@@ -330,7 +494,7 @@ export type GetBusDeparturesRequest = Message<"tfm.v1.GetBusDeparturesRequest"> 
  * Use `create(GetBusDeparturesRequestSchema)` to create a new message.
  */
 export const GetBusDeparturesRequestSchema: GenMessage<GetBusDeparturesRequest> = /*@__PURE__*/
-  messageDesc(file_tfm_v1_boards, 6);
+  messageDesc(file_tfm_v1_boards, 10);
 
 /**
  * @generated from message tfm.v1.GetBusDeparturesResponse
@@ -364,5 +528,5 @@ export type GetBusDeparturesResponse = Message<"tfm.v1.GetBusDeparturesResponse"
  * Use `create(GetBusDeparturesResponseSchema)` to create a new message.
  */
 export const GetBusDeparturesResponseSchema: GenMessage<GetBusDeparturesResponse> = /*@__PURE__*/
-  messageDesc(file_tfm_v1_boards, 7);
+  messageDesc(file_tfm_v1_boards, 11);
 
