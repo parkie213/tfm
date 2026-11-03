@@ -1,0 +1,20 @@
+/* Positioned by the shared map action row in App. */
+.btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+  font: 700 0.85rem system-ui, sans-serif;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.btn:hover:not(:disabled) {
+  border-color: var(--brand);
+}
+.btn:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}

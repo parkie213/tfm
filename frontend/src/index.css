@@ -1,0 +1,185 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ---- Design tokens (light "glass" theme, ported from the design export) ---- */
+:root {
+  --radius: 0.875rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Warm off-white that harmonises with OSM tiles */
+  --background: oklch(0.985 0.008 90);
+  --foreground: oklch(0.22 0.03 260);
+
+  --card: oklch(1 0 0 / 0.75);
+  --card-foreground: oklch(0.22 0.03 260);
+
+  /* Deep ink-teal brand */
+  --primary: oklch(0.32 0.07 220);
+  --primary-foreground: oklch(0.985 0.008 90);
+
+  --secondary: oklch(0.95 0.01 90);
+  --secondary-foreground: oklch(0.22 0.03 260);
+
+  --muted: oklch(0.94 0.01 90);
+  --muted-foreground: oklch(0.48 0.02 250);
+
+  --accent: oklch(0.70 0.18 35);
+  --accent-foreground: oklch(0.985 0.008 90);
+
+  --destructive: oklch(0.60 0.22 25);
+
+  --border: oklch(0.22 0.03 260 / 0.10);
+  --input: oklch(0.22 0.03 260 / 0.12);
+  --ring: oklch(0.32 0.07 220);
+
+  --glass: oklch(1 0 0 / 0.78);
+  --glass-border: oklch(0.22 0.03 260 / 0.08);
+
+  --brand: oklch(0.32 0.07 220);
+  --brand-deep: oklch(0.22 0.06 230);
+  --brand-soft: oklch(0.92 0.04 220);
+
+  --rail: oklch(0.55 0.22 25);
+  --pr: oklch(0.55 0.14 155);
+
+  /* Live-vehicle markers — deliberately distinct from the STATIC stop/station markers (bus stops use
+     --brand, stations use --rail) so a moving bus/train doesn't read as a fixed place. Vivid, and dark
+     enough to keep the white badge label/border legible. */
+  --bus-live: oklch(0.52 0.17 258);
+  --train-live: oklch(0.56 0.19 48);
+
+  /* Extra tokens not in the export */
+  --amber: oklch(0.82 0.16 85);
+  --amber-text: oklch(0.35 0.12 70);
+  --first-class: oklch(0.45 0.18 290);
+
+  --font-display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Subtle film-grain texture for glass surfaces (inline SVG, no request) */
+  --noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  /* DM Serif Display ships a single 400 weight with its own optical spacing —
+     no negative tracking, no synthesized bold. */
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ---- Shared utility classes (ported from the export's @utility blocks) ---- */
+.glass-panel {
+  position: relative;
+  background: oklch(1 0 0 / 0.82);
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.02);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.02);
+  border: 1px solid oklch(0.22 0.03 260 / 0.10);
+  box-shadow:
+    0 1px 0 0 oklch(1 0 0 / 0.85) inset,
+    1px 0 0 0 oklch(1 0 0 / 0.45) inset,
+    -1px 0 0 0 oklch(1 0 0 / 0.45) inset,
+    0 -1px 0 0 oklch(0.22 0.03 260 / 0.06) inset,
+    0 2px 4px 0 oklch(0.22 0.03 260 / 0.04),
+    0 8px 24px -8px oklch(0.22 0.03 260 / 0.10),
+    0 24px 60px -20px oklch(0.22 0.06 230 / 0.16);
+}
+
+/* Film-grain overlay — keeps the glass from reading as flat plastic */
+.glass-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: var(--noise);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.ink-panel {
+  background: linear-gradient(180deg, oklch(0.26 0.05 230), oklch(0.20 0.05 235));
+  color: oklch(0.985 0.008 90);
+  border: 1px solid oklch(1 0 0 / 0.06);
+  box-shadow: 0 24px 60px -24px oklch(0.22 0.06 230 / 0.45);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--glass-border);
+  background: oklch(1 0 0 / 0.6);
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.pulse-ring {
+  position: relative;
+}
+
+.pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  border: 2px solid var(--brand);
+  animation: pulse-ring 2.4s ease-out infinite;
+}
+
+/* Shop TV "You are here" pin halo. Global because the pin is a Leaflet divIcon (HTML injected
+   outside CSS-module scope). See src/pages/TVView.tsx. */
+@keyframes tfmShopPulse {
+  0% {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45), 0 0 0 0 oklch(0.7 0.18 35 / 0.5);
+  }
+  70%,
+  100% {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45), 0 0 0 14px oklch(0.7 0.18 35 / 0);
+  }
+}

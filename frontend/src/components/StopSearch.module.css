@@ -1,0 +1,183 @@
+/* ── StopSearch overlay ──────────────────────────────────────────────────────
+   Horizontally centred at the top of the map wrapper, above all Leaflet layers.
+   The parent (.mapWrapper in StationMap.module.css) is position:absolute/relative
+   so absolute positioning here is relative to the map container.
+   z-index 1100 puts it above Leaflet's pane stack (max ~1000) and popups (~1001).
+────────────────────────────────────────────────────────────────────────────── */
+
+.wrapper {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  width: min(300px, calc(100vw - 70px));
+  font-family: var(--font-sans);
+}
+
+/* Mobile: the top-centre position sits underneath the brand pill (top-left, higher z-index), which
+   leaves only a thin right-edge sliver of the input tappable. Drop the search to a full-width bar
+   below the pill instead. The route legend is pushed down to clear it (RouteLegend.module.css). */
+@media (max-width: 700px) {
+  .wrapper {
+    top: 4.5rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    transform: none;
+    width: auto;
+  }
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  background: oklch(1 0 0 / 0.88);
+  border: 1px solid oklch(0.22 0.03 260 / 0.10);
+  border-radius: 8px;
+  padding: 0 10px;
+  gap: 6px;
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.9) inset,
+    0 2px 12px -2px oklch(0.22 0.03 260 / 0.12);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.inputRow:focus-within {
+  border-color: oklch(0.32 0.07 220 / 0.35);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.9) inset,
+    0 2px 12px -2px oklch(0.22 0.03 260 / 0.12),
+    0 0 0 3px oklch(0.32 0.07 220 / 0.15);
+}
+
+.searchIcon {
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  line-height: 1;
+  padding: 8px 0;
+  min-width: 0;
+}
+
+/* Remove the default browser × button on search inputs — we clear via Escape / backspace. */
+.input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.input::placeholder {
+  color: var(--muted-foreground);
+}
+
+/* ── Dropdown ────────────────────────────────────────────────────────────── */
+
+.dropdown {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px oklch(0.22 0.03 260 / 0.15);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  max-height: 260px;
+  overflow-y: auto;
+  /* Scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+
+/* Searching… / no-results feedback row (shown in place of the result list). */
+.statusRow {
+  margin: 0;
+  padding: 10px 12px;
+  color: var(--foreground);
+  opacity: 0.6;
+  font-size: 0.82rem;
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.result:hover,
+.resultHighlighted {
+  background: oklch(0 0 0 / 0.05);
+}
+
+.resultName {
+  color: var(--foreground);
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultIndicator {
+  color: var(--muted-foreground);
+  font-weight: 400;
+}
+
+.resultMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.resultLocality {
+  color: var(--muted-foreground);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.resultTag {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brand);
+  background: var(--brand-soft);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* Place (town/locality) tag — a solid accent chip so it reads as distinct from stop tags. */
+.resultTagPlace {
+  color: #fff;
+  background: var(--accent, #d6006e);
+}

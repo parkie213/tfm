@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package tfm.v1;
+
+option java_package = "uk.org.tfm.proto.v1";
+option java_multiple_files = true;
+option java_outer_classname = "RoutesProto";
+
+import "tfm/v1/common.proto";
+
+// ----- Service detail (a trip's calling points) -----
+
+message ServiceStop {
+  int32 sequence = 1;
+  string atco_code = 2;
+  string name = 3;
+  string locality = 4;
+  double lat = 5;
+  double lng = 6;
+  string scheduled_time = 7;  // "HH:mm"
+}
+
+message GetServiceStopsRequest { string trip_id = 1; }
+
+// Calling points for a whole route (picked by clicking its line on the map). The route is identified
+// by the same name fields carried on RouteTrunk; the server resolves a representative trip (the
+// fullest variant) and returns its stops in the shared GetServiceStopsResponse.
+message GetRouteStopsRequest {
+  string route_short_name = 1;  // e.g. "5A"
+  string route_long_name = 2;   // disambiguates routes sharing a short name; "" to match on number alone
+  string operator = 3;          // operator (agency) name; disambiguates a number reused across operators
+                                // (long_name is often empty in GTFS, so this is the real discriminator)
+}
+
+message GetServiceStopsResponse {
+  string line = 1;
+  string destination = 2;
+  string operator = 3;
+  repeated ServiceStop stops = 4;
+  // Ordered road geometry (GTFS shape) for the trip; empty if the trip has no shape.
+  repeated LatLng shape = 5;
+}
+
+// ----- Route network overlay (all bus routes' geometry, viewport-scoped) -----
+
+message GetRouteShapesInViewportRequest {
+  double min_lat = 1;
+  double min_lng = 2;
+  double max_lat = 3;
+  double max_lng = 4;
+}
+
+// A shared-road segment with one centreline and its member routes. The four route metadata
+// arrays are parallel. The client draws a neutral network and highlights selected routes.
+message RouteTrunk {
+  repeated LatLng shape = 1;             // shared, full-resolution centreline
+  repeated string route_short_name = 2;  // consistently ordered route membership
+  repeated string route_long_name = 3;   // parallel to route_short_name
+  repeated string operator = 4;          // parallel to route_short_name
+  // Ready-to-use CSS colour per route (parallel to route_short_name): the official GTFS route_color
+  // as "#rrggbb" when the feed supplies one, else a deterministic "hsl(h, 70%, 42%)" fallback. The
+  // client paints this verbatim — it no longer derives route colours itself.
+  repeated string route_color = 5;
+}
+
+message GetRouteShapesInViewportResponse {
+  reserved 1;
+  reserved "routes";
+  // true if the result was capped (too many trunks through the viewport).
+  bool truncated = 2;
+  // The route network as shared multi-route trunks — what the overlay now renders.
+  repeated RouteTrunk trunks = 3;
+}
+
+// ----- Map data freshness (when the derived bus route geometry was last rebuilt) -----
+
+message GetMapDataStatusRequest {}
+
+message GetMapDataStatusResponse {
+  // When the route/trunk geometry was last (re)derived, epoch milliseconds. 0 when it has never
+  // been built (a fresh database) — the client then shows no freshness indicator.
+  int64 geometry_built_at_ms = 1;
+}

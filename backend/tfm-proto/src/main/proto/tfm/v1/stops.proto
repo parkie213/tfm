@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package tfm.v1;
+
+option java_package = "uk.org.tfm.proto.v1";
+option java_multiple_files = true;
+option java_outer_classname = "StopsProto";
+
+// ----- Stops (NaPTAN, GB-wide; viewport + search) -----
+
+message Stop {
+  string atco_code = 1;  // NaPTAN ATCO code (== GTFS stop_id)
+  string name = 2;       // common name
+  string indicator = 3;  // "adj", "opp", "Stop B", …
+  string locality = 4;
+  string stop_type = 5;  // BCT/BCS = bus, RSE/RLY = rail, …
+  double lat = 6;
+  double lng = 7;
+  // National Rail CRS code for rail stations (RLY/RSE), e.g. "LEI"; empty for bus/metro and any
+  // rail stop with no Network Rail board (heritage/closed). Drives the live train board vs bus board.
+  string crs = 8;
+}
+
+message GetStopsInViewportRequest {
+  double min_lat = 1;
+  double min_lng = 2;
+  double max_lat = 3;
+  double max_lng = 4;
+}
+
+message GetStopsInViewportResponse {
+  repeated Stop stops = 1;
+  // true if the result was capped (zoom in for the rest).
+  bool truncated = 2;
+}
+
+message SearchStopsRequest {
+  string query = 1;
+  int32 limit = 2;  // 0 = server default
+}
+
+// A populated place (NPTG locality) — a town/village, not a stop. Selecting one recenters the map.
+message Locality {
+  string code = 1;       // NptgLocalityCode
+  string name = 2;       // e.g. "Loughborough"
+  string qualifier = 3;  // disambiguating area, e.g. "Charnwood" (may be empty)
+  double lat = 4;
+  double lng = 5;
+}
+
+// One search result row: either a place (town/village) or a stop. Carried in a single ordered list so
+// the server can interleave the two by a unified rank (a strongly-matched town sorts above its own
+// station; a weakly-matched town sinks below real stops) rather than always listing places first.
+message SearchItem {
+  oneof item {
+    Stop stop = 1;
+    Locality place = 2;
+  }
+}
+
+message SearchStopsResponse {
+  // Results in final display order — highest rank first. Mix of stops and places.
+  repeated SearchItem items = 1;
+}

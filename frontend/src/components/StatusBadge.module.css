@@ -1,0 +1,36 @@
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid color-mix(in oklab, currentColor 25%, transparent);
+}
+
+.on-time {
+  background: color-mix(in oklab, var(--pr) 15%, white);
+  color: var(--pr);
+}
+
+.delayed {
+  background: color-mix(in oklab, var(--accent) 18%, white);
+  color: color-mix(in oklab, var(--accent) 80%, black);
+}
+
+.cancelled {
+  background: color-mix(in oklab, var(--destructive) 15%, white);
+  color: var(--destructive);
+}
+
+.due {
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+
+.scheduled {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}

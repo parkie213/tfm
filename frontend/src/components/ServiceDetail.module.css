@@ -1,0 +1,247 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ---- Header ---- */
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px 10px;
+  background: transparent;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.backBtn {
+  flex-shrink: 0;
+  margin-top: 2px;
+  padding: 4px 8px;
+  background: linear-gradient(180deg, oklch(0.26 0.05 230), oklch(0.20 0.05 235));
+  border: 1px solid oklch(1 0 0 / 0.06);
+  border-radius: 999px;
+  color: oklch(0.985 0.008 90);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.backBtn:hover {
+  opacity: 0.85;
+}
+
+.locateBtn {
+  margin-top: 8px;
+  padding: 5px 12px;
+  background: var(--brand, oklch(0.55 0.2 320));
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  align-self: flex-start;
+}
+
+.locateBtn:hover {
+  opacity: 0.88;
+}
+
+/* "Locating bus…" / "no live position" — a muted note where the Locate button would otherwise sit,
+   so the absence of a live bus is explained rather than silently missing. */
+.locateNote {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted, oklch(0.55 0.02 280));
+  font-style: italic;
+}
+
+.titleBlock {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: var(--font-display);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lineBadge {
+  display: inline-block;
+  padding: 2px 7px;
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.arrow {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+
+.destination {
+  font-weight: 400;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitle {
+  margin: 3px 0 0;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+/* ---- Body / scroll area ---- */
+.body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0;
+}
+
+/* ---- Stop list ---- */
+.stopList {
+  list-style: none;
+  margin: 0;
+  padding: 0 14px;
+}
+
+/* ---- Individual stop row ---- */
+.stopRow {
+  display: grid;
+  /* columns: timeline line | dot | time | stop info */
+  grid-template-columns: 16px 10px auto 1fr;
+  grid-template-rows: auto;
+  column-gap: 10px;
+  align-items: center;
+  padding: 6px 0;
+  position: relative;
+}
+
+/* The vertical connecting line running through every row except the last */
+.timeline {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: center;
+  width: 2px;
+  height: calc(100% + 12px);
+  background: color-mix(in oklab, var(--brand) 30%, var(--border));
+  display: block;
+  position: absolute;
+  left: 7px;
+  top: -6px;
+}
+
+.stopList > li:first-child .timeline {
+  top: 50%;
+  height: 50%;
+}
+
+.stopList > li:last-child .timeline {
+  height: 50%;
+  top: -6px;
+}
+
+.stopList > li:only-child .timeline {
+  display: none;
+}
+
+/* Dot on the timeline */
+.dot {
+  grid-column: 2;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--brand);
+  border: 2px solid white;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+}
+
+/* Origin / terminus emphasis */
+.stopList > li:first-child .dot,
+.stopList > li:last-child .dot {
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-width: 2.5px;
+}
+
+/* Scheduled time */
+.time {
+  grid-column: 3;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Stop name + locality */
+.stopInfo {
+  grid-column: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.stopName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.locality {
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Clickable calling-point row → zoom the map to that stop. */
+.stopRowClickable {
+  cursor: pointer;
+  transition: background 0.1s ease, transform 0.08s ease;
+}
+.stopRowClickable:hover {
+  background: oklch(0 0 0 / 0.04);
+  transform: translateX(3px);
+}
+.stopRowClickable:active {
+  transform: translateX(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stopRowClickable:hover,
+  .stopRowClickable:active {
+    transform: none;
+  }
+}

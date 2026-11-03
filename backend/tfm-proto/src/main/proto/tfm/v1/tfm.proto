@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package tfm.v1;
+
+option java_package = "uk.org.tfm.proto.v1";
+option java_multiple_files = true;
+option java_outer_classname = "TfmProto";
+
+import "tfm/v1/boards.proto";
+import "tfm/v1/buses.proto";
+import "tfm/v1/data_sources.proto";
+import "tfm/v1/routes.proto";
+import "tfm/v1/stops.proto";
+import "tfm/v1/trains.proto";
+
+service TfmService {
+  rpc GetTrainDepartures(GetTrainDeparturesRequest) returns (GetTrainDeparturesResponse);
+  rpc GetTrainArrivals(GetTrainArrivalsRequest) returns (GetTrainArrivalsResponse);
+  rpc GetBusDepartures(GetBusDeparturesRequest) returns (GetBusDeparturesResponse);
+  rpc GetBusVehicles(GetBusVehiclesRequest) returns (GetBusVehiclesResponse);
+  rpc GetStopsInViewport(GetStopsInViewportRequest) returns (GetStopsInViewportResponse);
+  rpc GetRouteShapesInViewport(GetRouteShapesInViewportRequest) returns (GetRouteShapesInViewportResponse);
+  rpc SearchStops(SearchStopsRequest) returns (SearchStopsResponse);
+  rpc GetServiceStops(GetServiceStopsRequest) returns (GetServiceStopsResponse);
+  rpc GetRouteStops(GetRouteStopsRequest) returns (GetServiceStopsResponse);
+  // Server-streaming live bus positions within a viewport box (replaces the GetBusVehicles poll).
+  rpc StreamBusVehicles(StreamBusVehiclesRequest) returns (stream GetBusVehiclesResponse);
+  // Server-streaming departure boards (replace the polls). The server maintains the board and pushes
+  // the current state on subscribe and on each refresh; the client replaces its state per message.
+  rpc StreamTrainDepartures(GetTrainDeparturesRequest) returns (stream GetTrainDeparturesResponse);
+  rpc StreamTrainArrivals(GetTrainArrivalsRequest) returns (stream GetTrainArrivalsResponse);
+  rpc StreamBusDepartures(GetBusDeparturesRequest) returns (stream GetBusDeparturesResponse);
+  // Live platform-occupancy board for a station (Darwin): platforms, the train at each, or empty.
+  rpc GetStationPlatforms(GetStationPlatformsRequest) returns (GetStationPlatformsResponse);
+  // Calling points of one train journey, resolved from a board row (Darwin timetable).
+  rpc GetTrainService(GetTrainServiceRequest) returns (GetTrainServiceResponse);
+  // When the bus route/lane/trunk geometry was last rebuilt — for a "map data updated N ago" hint.
+  rpc GetMapDataStatus(GetMapDataStatusRequest) returns (GetMapDataStatusResponse);
+  // The honest data-sources inventory: every feed, its status and freshness. Reflects state already
+  // held in-process — makes no new external calls.
+  rpc GetDataSources(GetDataSourcesRequest) returns (GetDataSourcesResponse);
+}

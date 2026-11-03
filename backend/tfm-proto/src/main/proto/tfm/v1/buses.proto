@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package tfm.v1;
+
+option java_package = "uk.org.tfm.proto.v1";
+option java_multiple_files = true;
+option java_outer_classname = "BusesProto";
+
+// ----- Live bus vehicle positions (BODS SIRI-VM) -----
+
+message BusVehicle {
+  // VehicleRef (stable within a day; not a durable cross-day id).
+  string id = 1;
+  // Service/line label, e.g. "8", "MC1".
+  string line = 2;
+  // Destination name.
+  string destination = 3;
+  // Operator code (NOC), e.g. "CBNL" (Centrebus).
+  string operator = 4;
+  double lat = 5;
+  double lng = 6;
+  // Compass bearing 0-359; -1 if the feed didn't provide one.
+  int32 bearing = 7;
+  // RFC3339 time the position was recorded upstream.
+  string recorded_at = 8;
+  // GTFS trip_id this vehicle is operating, resolved server-side by matching the SIRI-VM journey
+  // (line + origin stop + origin departure time + service date) to the timetable. Empty if no
+  // unique match (e.g. the feed omitted OriginAimedDepartureTime). When set, the client can call
+  // GetServiceStops(trip_id) to draw the route and calling points.
+  string trip_id = 9;
+
+  reserved 10 to 14;
+  reserved "has_progress", "delay_secs", "next_stop_sequence", "arrived", "not_started";
+
+  // ----- Road-snapped position (server-projected onto the trip's route geometry). -----
+  // The raw SIRI-VM fix often sits off the carriageway (GPS noise, urban canyon). When the bus is
+  // matched to a trip with known road geometry, the server projects the latest fix onto that
+  // polyline so the marker sits on the road. Only meaningful when `snapped` is true; otherwise the
+  // client falls back to raw lat/lng (e.g. no trip match, no shape yet, or the fix is too far off
+  // the route to be a confident snap — likely a genuine diversion).
+  bool snapped = 15;
+  double snapped_lat = 16;
+  double snapped_lng = 17;
+  // Route tangent (compass bearing 0-359) at the snapped point; -1 if unknown.
+  int32 snapped_bearing = 18;
+
+  // ----- Previous fix (one step back in the server's per-vehicle trajectory buffer). -----
+  // Lets a freshly-subscribed client seed its forward-prediction speed model from two real fixes on
+  // the very first frame — so a bus starts moving immediately on load instead of sitting still until a
+  // second fix arrives. All three are 0 / "" when the buffer holds only one fix for this vehicle.
+  double prev_lat = 19;
+  double prev_lng = 20;
+  string prev_recorded_at = 21;
+}
+
+message GetBusVehiclesRequest {
+  // Viewport bounding box (+ a client-side margin): the server returns only buses inside it. An
+  // unset/zero box means "all buses" (back-compat); it filters when minLat<maxLat && minLng<maxLng.
+  double min_lat = 1;
+  double min_lng = 2;
+  double max_lat = 3;
+  double max_lng = 4;
+}
+
+message GetBusVehiclesResponse {
+  repeated BusVehicle vehicles = 1;
+  // RFC3339 time the server last successfully fetched the feed.
+  string generated_at = 2;
+  // Age of the snapshot in seconds (lets the client show "as of …" / a degraded banner).
+  int32 snapshot_age_seconds = 3;
+  // true if the snapshot is older than the freshness threshold (or no successful fetch yet).
+  bool stale = 4;
+}
+
+// Subscribe to live bus positions within a map viewport. The server pushes the current snapshot
+// (filtered to the box) on subscribe and on every new poll; the client replaces its state per message.
+message StreamBusVehiclesRequest {
+  double min_lat = 1;
+  double min_lng = 2;
+  double max_lat = 3;
+  double max_lng = 4;
+  // Keep this trip's vehicle in the stream even when it's outside the box, so a service picked from a
+  // board can be located/followed while its bus is off-screen. "" = none.
+  string tracked_trip_id = 5;
+}

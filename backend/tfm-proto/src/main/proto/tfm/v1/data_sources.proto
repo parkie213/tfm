@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package tfm.v1;
+
+option java_package = "uk.org.tfm.proto.v1";
+option java_multiple_files = true;
+option java_outer_classname = "DataSourcesProto";
+
+// ----- Data sources (an honest "what's feeding the app and how fresh is it" inventory) -----
+
+// The operational state of a feed. The page shows the *real* state — a dormant/unkeyed source reads
+// DISABLED, a configured feed with no data yet reads SCAFFOLDED, a baked artifact reads LIVE+static.
+enum DataSourceStatus {
+  DATA_SOURCE_STATUS_UNSPECIFIED = 0;
+  DATA_SOURCE_STATUS_LIVE        = 1;  // actively fetched and flowing to a handler now
+  DATA_SOURCE_STATUS_SCAFFOLDED  = 2;  // configured, but no data received/loaded yet
+  DATA_SOURCE_STATUS_DEFERRED    = 3;  // planned, not connected
+  DATA_SOURCE_STATUS_ERROR       = 4;  // last fetch failed / snapshot stale past threshold
+  DATA_SOURCE_STATUS_DISABLED    = 5;  // not configured (no key / url / credentials)
+}
+
+// One external feed (or baked artifact) the app depends on.
+message DataSource {
+  string id = 1;                       // stable slug, e.g. "bods-siri-vm"
+  string name = 2;                     // display name, e.g. "BODS SIRI-VM"
+  string category = 3;                 // "Trains" | "Buses" | "Geography & routing" | "Reference data"
+  string feeds = 4;                    // short "what it feeds" description
+  DataSourceStatus status = 5;
+  string last_updated = 6;             // RFC3339 of the last successful update; "" when n/a
+  int32 expected_interval_secs = 7;    // the source's expected cadence; 0 = static/baked
+  int64 item_count = 8;                // e.g. vehicles / stops; -1 when n/a
+  string detail = 9;                   // free text: licence / endpoint / last error / build date
+}
+
+message GetDataSourcesRequest {}
+
+message GetDataSourcesResponse {
+  repeated DataSource sources = 1;
+  // RFC3339 time this snapshot was assembled.
+  string generated_at = 2;
+  reserved 3;
+  reserved "server_version";
+}

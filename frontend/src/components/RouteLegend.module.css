@@ -1,0 +1,94 @@
+/* The shared map action row positions this panel beside the discovery button. */
+.legend {
+  flex-shrink: 0;
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  opacity: 0.92;
+}
+
+/* The always-visible toggle pill. */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--foreground, oklch(0.2 0.02 250));
+}
+
+.hamburger {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.headerLabel {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.count {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.72rem;
+  background: oklch(0.92 0.01 250 / 0.8);
+  color: var(--foreground, oklch(0.2 0.02 250));
+}
+
+/* The expanded list of route chips. Capped so it scrolls rather than growing down into the
+   bottom-left map control stack (share / recenter / zoom / compass), which
+   anchors to the bottom and reaches ~20rem up the same left column. */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0 4px 4px;
+  max-height: calc(100vh - 84px - 21rem);
+  overflow-y: auto;
+}
+
+@media (max-width: 700px) {
+  .list {
+    max-height: calc(100dvh - 7.25rem - 21rem);
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 2px 6px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+
+.item:hover {
+  background: oklch(0.95 0.01 250 / 0.7);
+}
+
+.itemSelected {
+  background: var(--brand-soft, oklch(0.92 0.05 320));
+}
+
+.swatch {
+  flex-shrink: 0;
+  width: 14px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.num {
+  font-weight: 700;
+  font-size: 0.74rem;
+  color: var(--foreground, oklch(0.2 0.02 250));
+}

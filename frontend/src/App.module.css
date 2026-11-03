@@ -1,0 +1,250 @@
+.app {
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* ---- Shell: full-bleed map, board floats over it ---- */
+.main {
+  position: relative;
+  height: 100%;
+}
+
+.mapSection {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Desktop: the board is a floating card docked top-right, sized to its content (so the map stays
+   clickable below it, and a collapsed chip doesn't blanket the right edge). Internal scroll via
+   BoardPanel. Mobile keeps the fixed bottom sheet (BottomSheet.module.css). */
+@media (min-width: 701px) {
+  .sidebar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    bottom: 1rem; /* expanded: full-height card so BoardPanel (height:100%) scrolls internally */
+    width: 26rem;
+    max-width: calc(100% - 2rem);
+    z-index: 1200;
+    border-radius: var(--radius-xl);
+    background: var(--background);
+    box-shadow:
+      0 0 0 1px oklch(0.22 0.03 260 / 0.06),
+      0 8px 24px -8px oklch(0.22 0.06 230 / 0.18),
+      0 32px 80px -24px oklch(0.22 0.06 230 / 0.3);
+    animation: fadeSlideRight 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Collapsed → a chip: size to content so the map stays clickable below it. */
+  .sidebarCollapsed {
+    bottom: auto;
+  }
+}
+
+/* ---- Page-load orchestration: staggered chrome reveal ---- */
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ---- Brand pill (top-left of map) ---- */
+.brandPill {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: var(--radius-lg);
+  padding: 0.5rem 0.875rem 0.5rem 0.625rem;
+  color: var(--brand);
+  animation: fadeSlideDown 0.4s ease-out 0.1s both;
+}
+
+.brandText {
+  line-height: 1.2;
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--foreground);
+}
+
+.brandTagline {
+  font-size: 0.625rem;
+  color: var(--muted-foreground);
+}
+
+/* Shared flow keeps discovery controls apart when either is hidden or routes expand. */
+.mapActions {
+  position: absolute;
+  top: 5.25rem;
+  left: 0.75rem;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: calc(100% - 1.5rem);
+}
+
+@media (max-width: 700px) {
+  .mapActions {
+    top: 7.25rem; /* Below the mobile search row. */
+  }
+}
+
+/* ---- Live status (trailing item in the bottom-left legend bar) ---- */
+.legendLive {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  color: var(--foreground);
+}
+
+.liveDot {
+  position: relative;
+  display: inline-flex;
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
+.liveDotPing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--pr);
+  opacity: 0.6;
+  animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.liveDotCore {
+  position: relative;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--pr);
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* ---- Legend (bottom-left of map) ---- */
+.legend {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  animation: fadeSlideUp 0.4s ease-out 0.3s both;
+  /* Promote to its own compositing layer so the backdrop-filter re-samples the
+     moving map cleanly each frame, instead of leaving ghost trails of the live
+     time text smeared under the legend pills (Chromium backdrop-filter bug). */
+  will-change: transform;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+}
+
+.legendDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendSep {
+  width: 1px;
+  height: 0.75rem;
+  background: var(--glass-border);
+}
+
+/* ---- Mobile: the fixed bottom sheet floats above the (already full-bleed) map ---- */
+@media (max-width: 700px) {
+  .brandPill {
+    top: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .legend {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brandPill,
+  .legend,
+  .sidebar {
+    animation: none;
+  }
+
+  .liveDotPing {
+    animation: none;
+    opacity: 0;
+  }
+}

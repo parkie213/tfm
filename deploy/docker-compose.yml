@@ -1,0 +1,74 @@
+# Local application stack. Run from deploy/: docker compose up --build
+services:
+  web:
+    build:
+      context: ../frontend
+    ports:
+      - "127.0.0.1:5174:80"
+    depends_on:
+      - envoy
+
+  tfm-server:
+    build:
+      context: ../backend
+    restart: unless-stopped # pairs with -XX:+ExitOnOutOfMemoryError in the image
+    environment:
+      JAVA_TOOL_OPTIONS: "${JAVA_TOOL_OPTIONS:--Xmx3g}"
+      GRPC_PORT: "9090"
+      DB_URL: "jdbc:postgresql://postgres:5432/tfm"
+      DB_USER: "tfm"
+      DB_PASSWORD: "tfm"
+      DARWIN_TOKEN: "${DARWIN_TOKEN:-}"
+      DARWIN_BASE_URL: "${DARWIN_BASE_URL:-https://api1.raildata.org.uk/1010-live-departure-board-dep1_2/LDBWS/api/20220120}"
+      DARWIN_ARRIVALS_BASE_URL: "${DARWIN_ARRIVALS_BASE_URL:-}"
+      DARWIN_ARRIVALS_TOKEN: "${DARWIN_ARRIVALS_TOKEN:-}"
+      BODS_API_KEY: "${BODS_API_KEY:-}"
+      BODS_BBOX: "${BODS_BBOX:-}"
+      GTFS_CACHE_DIR: "/data/gtfs"
+      GTFS_REGIONS: "${GTFS_REGIONS:-east_midlands}"
+      GTFS_LOAD_SHAPES: "${GTFS_LOAD_SHAPES:-true}"
+      BUS_TIMETABLE_ENABLED: "${BUS_TIMETABLE_ENABLED:-true}"
+      NAPTAN_AREAS: "${NAPTAN_AREAS:-}"
+      OSRM_URL: "${OSRM_URL:-}"
+      OSRM_VERSION: "${OSRM_VERSION:-}"
+      OSRM_COVERAGE_BBOX: "${OSRM_COVERAGE_BBOX:-}"
+      DARWIN_KAFKA_BOOTSTRAP: "${DARWIN_KAFKA_BOOTSTRAP:-}"
+      DARWIN_KAFKA_TOPIC: "${DARWIN_KAFKA_TOPIC:-}"
+      DARWIN_KAFKA_KEY: "${DARWIN_KAFKA_KEY:-}"
+      DARWIN_KAFKA_SECRET: "${DARWIN_KAFKA_SECRET:-}"
+      DARWIN_KAFKA_GROUP: "${DARWIN_KAFKA_GROUP:-tfm-local}"
+    volumes:
+      - ./gtfs-cache:/data/gtfs
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: tfm
+      POSTGRES_USER: tfm
+      POSTGRES_PASSWORD: tfm
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tfm -d tfm"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  envoy:
+    image: envoyproxy/envoy:v1.31-latest
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+    ports:
+      - "127.0.0.1:8088:8080"
+    depends_on:
+      - tfm-server
+
+volumes:
+  pg-data:

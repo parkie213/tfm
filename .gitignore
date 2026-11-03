@@ -1,0 +1,43 @@
+# Java / Maven
+**/target/
+
+# Node / Vite
+**/node_modules/
+**/dist/
+
+# Secrets & local env
+deploy/.env
+**/.env.local
+
+# Data
+*.db
+
+# Editor/OS
+.idea/
+*.iml
+.DS_Store
+
+# Local backend token
+backend/.env
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# Ignore leftover infrastructure state from older local checkouts.
+infra/
+
+# Cached GTFS bulk data (large, regenerated)
+deploy/gtfs-cache/
+# Retired local timetable downloads (kept ignored to avoid committing existing user data).
+deploy/darwin-inbox/*
+deploy/PPTimetable_*.xml.gz
+
+# Legacy local artifacts; no longer built or served by the app.
+deploy/basemap/
+deploy/sftp-hostkeys/
+
+# Generated Maven Shade output and local upstream snapshots.
+**/dependency-reduced-pom.xml
+deploy/EHSnapshot_*.txt

@@ -1,0 +1,73 @@
+/* Desktop: a transparent wrapper that simply fills the sidebar grid cell.
+   The actual layout styles (flex column, overflow) come from App's .sidebar
+   class, which is passed in via className. */
+.sheet {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.grabber {
+  display: none;
+}
+
+/* Mobile: fixed sheet spanning the bottom 88dvh, positioned via inline
+   translateY managed by BottomSheet.tsx (snap points + drag). */
+@media (max-width: 700px) {
+  .sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 12dvh;
+    height: 88dvh;
+    z-index: 1300;
+    overflow: hidden;
+    background: var(--background);
+    border: 1px solid var(--glass-border);
+    border-bottom: none;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    box-shadow: 0 -8px 40px -8px oklch(0.22 0.06 230 / 0.25);
+    padding-bottom: env(safe-area-inset-bottom);
+    will-change: transform;
+  }
+
+  .grabber {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    width: 100%;
+    padding: 10px 0 6px;
+    background: none;
+    border: none;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* The panel fills whatever height remains under the grabber. */
+  .sheet > :not(.grabber) {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .grabber:active {
+    cursor: grabbing;
+  }
+
+  .grabberBar {
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+    background: oklch(0.22 0.03 260 / 0.18);
+    transition: background 0.15s;
+  }
+
+  .grabber:hover .grabberBar,
+  .grabber:focus-visible .grabberBar {
+    background: var(--muted-foreground);
+  }
+}

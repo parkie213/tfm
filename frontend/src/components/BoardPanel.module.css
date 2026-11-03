@@ -1,0 +1,366 @@
+/* ---- Panel shell: two stacked glass cards ---- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panelCollapsed {
+  /* collapsed = just the header card; the timetable card isn't rendered */
+  height: auto;
+}
+
+/* ---- Header card ---- */
+.headerCard {
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.25rem;
+  flex-shrink: 0;
+}
+
+/* ---- Timetable card ---- */
+.timetableCard {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+/* ---- Handle / title bar (inside header card) ---- */
+.panelHandle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.panelTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--foreground);
+  line-height: 1.2;
+}
+
+.panelHandleActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ---- Back-to-station button (ink pill, matching the mockup) ---- */
+.backBtn {
+  padding: 6px 12px;
+  background: linear-gradient(180deg, oklch(0.26 0.05 230), oklch(0.20 0.05 235));
+  border: 1px solid oklch(1 0 0 / 0.06);
+  border-radius: 999px;
+  color: oklch(0.985 0.008 90);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.12s ease, transform 0.08s ease;
+  white-space: nowrap;
+}
+
+.backBtn:hover {
+  filter: brightness(1.3);
+  transform: translateY(-1px);
+}
+
+.backBtn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* ---- Close (dismiss stop focus) button ---- */
+.closeBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted-foreground);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease, transform 0.08s ease;
+  flex-shrink: 0;
+}
+
+.closeBtn:hover {
+  color: var(--foreground);
+  border-color: var(--muted-foreground);
+  transform: scale(1.1);
+}
+
+.closeBtn:active {
+  transform: scale(0.92);
+}
+
+/* ---- Collapse button ---- */
+.collapseBtn {
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted-foreground);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+  flex-shrink: 0;
+}
+
+.collapseBtn:hover {
+  color: var(--foreground);
+  border-color: var(--muted-foreground);
+  transform: scale(1.1);
+}
+
+.collapseBtn:active {
+  transform: scale(0.92);
+}
+
+/* ---- Board content ---- */
+.boardContent {
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  /* Let the table compact to the PANEL width (fixed 26rem sidebar / mobile sheet), not the
+     viewport — otherwise a wide-viewport desktop keeps all 7 columns and the table overflows. */
+  container-type: inline-size;
+}
+
+/* Divider between the stacked Departures and Arrivals sections. */
+.viewTransition > * + * {
+  border-top: 1px solid var(--border);
+}
+
+/* ---- View change (station ↔ stop ↔ service): slide the new view in ---- */
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.viewTransition {
+  animation: panelSlideIn 0.22s ease-out both;
+}
+
+/* Service detail manages its own internal scroll → needs the full height. */
+.viewTransitionFill {
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewTransition {
+    animation: none;
+  }
+}
+
+/* ---- Status states ---- */
+.errorWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 30px 16px;
+  text-align: center;
+}
+
+.errorTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--destructive);
+  margin: 0;
+}
+
+.errorDetail {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  margin: 0;
+  word-break: break-word;
+}
+
+.errorHint {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+/* ---- Unimplemented notice ---- */
+.unimplemented {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.unimplementedIcon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.unimplementedText {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.unimplementedSub {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  margin: 0;
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+/* ---- Mobile: panel fills the BottomSheet, which owns the chrome ---- */
+@media (max-width: 700px) {
+  .panel {
+    height: 100%;
+    gap: 0;
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .headerCard {
+    border-radius: 0;
+    border-bottom: none;
+    padding: 0.5rem 1rem 0.75rem;
+  }
+
+  .timetableCard {
+    border-radius: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .boardContent {
+    /* The sheet controls overall height; scroll inside without dragging it. */
+    touch-action: pan-y;
+  }
+
+  /* Snap points replace the collapse toggle on mobile. */
+  .collapseBtn {
+    display: none;
+  }
+}
+
+/* ---- Day stepper (Today / Tomorrow / date) for the bus board ---- */
+.dayStepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dayBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--foreground);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, transform 0.08s ease;
+}
+
+.dayBtn:hover:not(:disabled) {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--primary-foreground);
+  transform: scale(1.08);
+}
+
+.dayBtn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.dayBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.dayLabel {
+  min-width: 96px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backBtn,
+  .closeBtn,
+  .collapseBtn,
+  .dayBtn {
+    transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, filter 0.12s ease;
+  }
+
+  .backBtn:hover,
+  .backBtn:active,
+  .closeBtn:hover,
+  .closeBtn:active,
+  .collapseBtn:hover,
+  .collapseBtn:active,
+  .dayBtn:hover:not(:disabled),
+  .dayBtn:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ---- "Show earlier buses" toggle (today view) ---- */
+.earlierBtn {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: color 0.12s ease, background 0.12s ease;
+}
+
+.earlierBtn:hover {
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+/* ---- Auto-jumped-to-tomorrow note ---- */
+.jumpNote {
+  margin: 0;
+  padding: 8px 14px 2px;
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+}

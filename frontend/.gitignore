@@ -1,0 +1,7 @@
+node_modules
+dist
+.env.local
+*.tsbuildinfo
+# Legacy local map archives (no longer used).
+public/*.pmtiles
+.basemap-build/

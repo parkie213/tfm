@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package tfm.v1;
+
+option java_package = "uk.org.tfm.proto.v1";
+option java_multiple_files = true;
+option java_outer_classname = "CommonProto";
+
+message LatLng {
+  double lat = 1;
+  double lng = 2;
+}

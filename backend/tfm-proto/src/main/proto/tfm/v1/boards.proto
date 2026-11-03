@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package tfm.v1;
+
+option java_package = "uk.org.tfm.proto.v1";
+option java_multiple_files = true;
+option java_outer_classname = "BoardsProto";
+
+// A single departure row, shared by both the train and bus boards.
+message Departure {
+  // Scheduled departure time, "HH:mm" local (Europe/London).
+  string scheduled_time = 1;
+  // Expected/estimated time: "HH:mm", "On time", "Delayed", or "Cancelled".
+  string expected_time = 2;
+  // Final destination (terminus) of the service.
+  string destination = 3;
+  // Train/bus operator name (e.g. "East Midlands Railway", "Arriva Midlands").
+  string operator = 4;
+  // Platform number (trains) or stand/bay (buses); empty if unknown.
+  string platform_or_bay = 5;
+  // Human-readable status: "On time" | "Delayed" | "Cancelled" | "Due".
+  string status = 6;
+  // Delay in minutes (0 if on time or unknown).
+  int32 delay_minutes = 7;
+  // true if backed by real-time data; false if scheduled-only (typical for buses at MVP).
+  bool is_live = 8;
+  // Upstream identifier: Darwin serviceID (trains) or GTFS trip_id (buses).
+  string service_id = 9;
+  // Origin (where the service started). Populated for arrivals boards; empty for departures.
+  string origin = 10;
+  // Number of coaches (Darwin "length"); 0 if not reported.
+  int32 coach_count = 11;
+  // Per-coach formation/loading, when the operator publishes it (often empty).
+  repeated Coach coaches = 12;
+  // Service/line label for buses (route_short_name, e.g. "5", "MC1"). Empty for trains.
+  string line = 13;
+  // Bus only: the trip is scheduled to be running now (origin departed, not yet terminated) but no
+  // live vehicle could be located for it — the operator publishes no GPS to BODS. The row is real,
+  // just unlocatable on the map. false for trains and for located/inactive services.
+  bool no_gps = 14;
+}
+
+// One coach in a train's formation (Darwin formation.coaches[]).
+message Coach {
+  // Coach label, e.g. "A1".
+  string number = 1;
+  // "Standard" | "First" | "Mixed".
+  string coach_class = 2;
+  // Loading as a percentage full (0-100); only meaningful when loading_known is true.
+  int32 loading = 3;
+  bool loading_known = 4;
+  // Toilet availability, e.g. "Standard", "Accessible", "None", "Unknown".
+  string toilet = 5;
+}
+
+// ----- Trains (Darwin LDBWS) -----
+
+message GetTrainDeparturesRequest {
+  // CRS station code, e.g. "MMO" for Melton Mowbray.
+  string crs = 1;
+  // Number of rows to return; 0 = server default (10).
+  int32 num_rows = 2;
+}
+
+message GetTrainDeparturesResponse {
+  string station_name = 1;
+  // RFC3339 timestamp of when the board was generated upstream.
+  string generated_at = 2;
+  repeated Departure departures = 3;
+  // Concatenated National Rail Communications Centre disruption messages.
+  string nrcc_messages = 4;
+}
+
+// Arrivals mirror departures. For each row, scheduled_time/expected_time hold the arrival
+// times (sta/eta) and `origin` is populated (`destination` is left empty).
+message GetTrainArrivalsRequest {
+  string crs = 1;
+  int32 num_rows = 2;
+}
+
+message GetTrainArrivalsResponse {
+  string station_name = 1;
+  string generated_at = 2;
+  repeated Departure arrivals = 3;
+  string nrcc_messages = 4;
+}
+
+// ----- Buses (BODS GTFS) -----
+
+message GetBusDeparturesRequest {
+  // NaPTAN ATCO stop code.
+  string atco_code = 1;
+  // Number of rows to return; 0 = server default.
+  int32 num_rows = 2;
+  // Upcoming mode only: cap to this many minutes ahead; 0 = no time cap (next num_rows whenever).
+  int32 lookahead_mins = 3;
+  // Local date "yyyy-MM-dd" to show the whole day's timetable for. Empty = upcoming from now.
+  string date = 4;
+}
+
+message GetBusDeparturesResponse {
+  string stop_name = 1;
+  string generated_at = 2;
+  repeated Departure departures = 3;
+  // false = scheduled-only board (no real-time overlay applied).
+  bool is_realtime = 4;
+}

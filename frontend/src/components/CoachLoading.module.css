@@ -1,0 +1,116 @@
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px 12px;
+  background: var(--secondary);
+  border-top: 1px solid var(--border);
+}
+
+.coach {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  min-width: 52px;
+  font-size: 0.75rem;
+}
+
+.coachNumber {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--foreground);
+  letter-spacing: 0.04em;
+}
+
+.coachIcons {
+  display: flex;
+  gap: 3px;
+  min-height: 14px;
+  align-items: center;
+}
+
+.firstClass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--first-class);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.toilet {
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.loadingBarOuter {
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--muted);
+  overflow: hidden;
+}
+
+.loadingBarInner {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.loadingPct {
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}
+
+/* Loading states — applied to both the coach container border and the bar */
+.loadingLow {
+  border-color: var(--pr);
+}
+
+.loadingLow .loadingBarInner,
+.loadingBarInner.loadingLow {
+  background: var(--pr);
+}
+
+.loadingMid {
+  border-color: var(--accent);
+}
+
+.loadingMid .loadingBarInner,
+.loadingBarInner.loadingMid {
+  background: var(--accent);
+}
+
+.loadingHigh {
+  border-color: var(--destructive);
+}
+
+.loadingHigh .loadingBarInner,
+.loadingBarInner.loadingHigh {
+  background: var(--destructive);
+}
+
+.loadingUnknown {
+  border-color: var(--border);
+}
+
+.loadingUnknown .loadingBarInner,
+.loadingBarInner.loadingUnknown {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--muted),
+    var(--muted) 3px,
+    var(--border) 3px,
+    var(--border) 6px
+  );
+}

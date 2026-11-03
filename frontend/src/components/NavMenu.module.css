@@ -1,0 +1,153 @@
+.root {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1200;
+}
+
+/* Inline: flows within a parent (e.g. the map's brand pill) instead of pinning to the viewport. */
+.rootInline {
+  position: relative;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+}
+
+/* The burger button itself */
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  /* glass-panel styles replicated here so the trigger uses the same surface */
+  background: oklch(1 0 0 / 0.82);
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.02);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.02);
+  box-shadow:
+    0 1px 0 0 oklch(1 0 0 / 0.85) inset,
+    0 2px 4px 0 oklch(0.22 0.03 260 / 0.06),
+    0 8px 24px -8px oklch(0.22 0.03 260 / 0.10);
+  border: 1px solid oklch(0.22 0.03 260 / 0.10);
+  color: var(--foreground);
+  transition: background 0.15s ease;
+  animation: fadeSlideDown 0.4s ease-out 0.1s both;
+}
+
+.trigger:hover {
+  background: oklch(1 0 0 / 0.95);
+}
+
+/* Inside the brand pill the trigger sits on an existing glass surface, so drop its own
+   backdrop/shadow and read as a light icon button (mirrors the old TV button). */
+.rootInline .trigger {
+  width: 2.1rem;
+  height: 2.1rem;
+  background: oklch(1 0 0 / 0.5);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  border: 1px solid var(--glass-border);
+  animation: none;
+}
+
+.rootInline .trigger:hover {
+  background: oklch(1 0 0 / 0.85);
+}
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown panel */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 13rem;
+  border-radius: var(--radius-lg);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  animation: dropIn 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* glass-panel */
+  background: oklch(1 0 0 / 0.92);
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.02);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.02);
+  border: 1px solid oklch(0.22 0.03 260 / 0.10);
+  box-shadow:
+    0 1px 0 0 oklch(1 0 0 / 0.85) inset,
+    0 4px 16px -4px oklch(0.22 0.06 230 / 0.14),
+    0 16px 40px -12px oklch(0.22 0.06 230 / 0.20);
+}
+
+/* Left-anchored dropdown for the inline (brand-pill) placement, so it opens within the viewport. */
+.dropdownLeft {
+  left: 0;
+  right: auto;
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Individual nav links */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+  transition: background 0.12s ease;
+  white-space: nowrap;
+}
+
+.item:hover {
+  background: oklch(0.22 0.03 260 / 0.06);
+}
+
+.itemIcon {
+  font-size: 1rem;
+  width: 1.25rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--glass-border);
+  margin: 0.25rem 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger {
+    animation: none;
+  }
+  .dropdown {
+    animation: none;
+  }
+}

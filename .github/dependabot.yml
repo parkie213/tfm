@@ -1,0 +1,42 @@
+# Automated dependency-update PRs. Covers what Dependabot natively understands: GitHub Actions
+# versions, Maven (backend), npm (frontend), and Dockerfile FROM lines. Minor/patch updates are
+# grouped into one PR per ecosystem to keep the noise down.
+#
+# Compose image tags are maintained manually.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        update-types: [minor, patch]
+
+  - package-ecosystem: maven
+    directory: "/backend"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      maven-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: "/frontend"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+
+  # Dockerfile FROM lines (build images: maven, eclipse-temurin, node, and nginx).
+  - package-ecosystem: docker
+    directory: "/backend"
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: "/frontend"
+    schedule:
+      interval: weekly

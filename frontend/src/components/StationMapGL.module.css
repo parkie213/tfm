@@ -1,0 +1,5 @@
+/* The map's controls sit bottom-left (the board card owns the right edge). Lift the maplibre bottom-left
+   control stack above the App's bottom-left legend pill (bottom:1rem, ~2rem tall) so they never overlap. */
+.root :global(.maplibregl-ctrl-bottom-left) {
+  margin-bottom: 3.25rem;
+}

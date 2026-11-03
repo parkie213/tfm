@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>uk.org.tfm</groupId>
+    <artifactId>tfm-backend</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>tfm-server</artifactId>
+  <name>TFM Server</name>
+  <description>gRPC server: Darwin train board + BODS bus board, wired with Dagger 2</description>
+
+  <properties>
+    <main.class>uk.org.tfm.server.Main</main.class>
+  </properties>
+
+  <dependencies>
+    <dependency><groupId>uk.org.tfm</groupId><artifactId>tfm-adapter-darwin-kafka</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>uk.org.tfm</groupId><artifactId>tfm-storage-postgres</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>uk.org.tfm</groupId><artifactId>tfm-adapter-gtfs</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>uk.org.tfm</groupId><artifactId>tfm-adapter-stops</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>uk.org.tfm</groupId><artifactId>tfm-adapter-bods</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>uk.org.tfm</groupId><artifactId>tfm-model</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>uk.org.tfm</groupId><artifactId>tfm-adapter-darwin</artifactId><version>${project.version}</version></dependency>
+    <dependency>
+      <groupId>uk.org.tfm</groupId>
+      <artifactId>tfm-proto</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- JSON parsing for the RDM LDBWS REST responses -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
+    <!-- gRPC server -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-services</artifactId>
+    </dependency>
+
+    <!-- Dagger 2 -->
+    <dependency>
+      <groupId>com.google.dagger</groupId>
+      <artifactId>dagger</artifactId>
+    </dependency>
+
+    <!-- Postgres + PostGIS: national stops + GTFS timetable -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>tfm-server</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.google.dagger</groupId>
+              <artifactId>dagger-compiler</artifactId>
+              <version>${dagger.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+
+      <!--
+        Geometry-algorithm version = SHA-256 of the sources that deterministically shape the derived
+        route/trunk geometry. This is the algo input of the load-state freshness key: bump it
+        automatically (no human "remember to bump") whenever any of these files change, so the next
+        load re-derives geometry instead of serving output from a stale algorithm.
+
+        Scope is the whole geometry package PLUS PostgresBusGeometryStore and BusGeometryBuilder (the SQL + de-direction that shape the
+        output) and OsrmRouter (the snapping). Deliberately broad: incidental edits here (e.g. a log
+        line) cause a needless rebuild — over-invalidation is the SAFE failure; under-invalidation
+        (silent stale geometry) is the one we must never risk. A single fileset (one basedir) keeps the
+        sort — hence the hash — deterministic across dev and CI. The generated file lives under target/,
+        so it is never part of its own input.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>generate-geometry-algo-version</id>
+            <phase>generate-sources</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+              <target>
+                <property name="geom.gen.dir"
+                          value="${project.build.directory}/generated-sources/geometry-version"/>
+                <property name="geom.cat"
+                          value="${project.build.directory}/geometry-algo-sources.cat"/>
+                <concat destfile="${geom.cat}" fixlastline="true">
+                  <sort>
+                    <fileset dir="${project.basedir}/..">
+                      <include name="tfm-server/src/main/java/uk/org/tfm/server/gtfs/geometry/*.java"/>
+                      <include name="tfm-server/src/main/java/uk/org/tfm/server/gtfs/BusGeometryBuilder.java"/>
+                      <include name="tfm-server/src/main/java/uk/org/tfm/server/db/OsrmRouter.java"/>
+                      <include name="tfm-storage-postgres/src/main/java/uk/org/tfm/storage/postgres/PostgresBusGeometryStore.java"/>
+                    </fileset>
+                  </sort>
+                </concat>
+                <checksum file="${geom.cat}" algorithm="SHA-256" property="geom.algo.hash"/>
+                <mkdir dir="${geom.gen.dir}/uk/org/tfm/server/gtfs/geometry"/>
+                <echo file="${geom.gen.dir}/uk/org/tfm/server/gtfs/geometry/GeometryAlgoVersion.java">package uk.org.tfm.server.gtfs.geometry;
+
+/**
+ * GENERATED at build time — do not edit. {@link #HASH} is the SHA-256 of the geometry-algorithm
+ * sources (see maven-antrun-plugin in this module's pom). It is the algo component of the load-state
+ * freshness key, so it changes automatically whenever the geometry code changes.
+ */
+public final class GeometryAlgoVersion {
+  private GeometryAlgoVersion() {}
+
+  /** SHA-256 of the geometry-algorithm sources at build time. */
+  public static final String HASH = "${geom.algo.hash}";
+}
+</echo>
+                <echo message="geometry algo version (sha256 of sources) = ${geom.algo.hash}"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <execution>
+            <id>add-geometry-version-source</id>
+            <phase>generate-sources</phase>
+            <goals><goal>add-source</goal></goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/geometry-version</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Build a runnable fat jar so the Docker image is a single artifact -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.2</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>shade</goal></goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>${main.class}</mainClass>
+                </transformer>
+                <!-- Merge gRPC/Netty service-loader + jakarta JAX-WS descriptors -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>module-info.class</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,0 +1,94 @@
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton {
+  padding: 16px;
+}
+
+.headerShimmer {
+  height: 22px;
+  width: 55%;
+  border-radius: 6px;
+  margin: 0 0 14px 2px;
+}
+
+.tableShimmer {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.cell,
+.headerShimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    oklch(0.97 0.008 90) 50%,
+    var(--muted) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  animation-delay: calc(var(--row-i, 0) * 0.06s);
+}
+
+.cell {
+  height: 14px;
+  border-radius: 4px;
+}
+
+.cellTime {
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.cellExpected {
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.cellLine {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.cellDest {
+  flex: 1;
+  min-width: 80px;
+}
+
+.cellPlatform {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.cellStatus {
+  width: 60px;
+  flex-shrink: 0;
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell,
+  .headerShimmer {
+    animation: none;
+    background: var(--muted);
+  }
+}

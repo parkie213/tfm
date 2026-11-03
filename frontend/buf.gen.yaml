@@ -1,0 +1,8 @@
+version: v2
+inputs:
+  - directory: ../backend/tfm-proto/src/main/proto
+plugins:
+  - local: protoc-gen-es
+    out: src/proto
+    opt:
+      - target=ts

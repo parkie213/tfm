@@ -1,0 +1,264 @@
+/* TrainServiceDetail — mirrors ServiceDetail's layout and class patterns closely. */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ---- Header ---- */
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px 10px;
+  background: transparent;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.titleBlock {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: var(--font-display);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* 4-char headcode in a rail-coloured mono chip */
+.headcodeChip {
+  display: inline-block;
+  padding: 2px 7px;
+  background: oklch(0.35 0.12 20 / 0.15);
+  color: oklch(0.46 0.2 20);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.arrow {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+
+.routeLabel {
+  font-weight: 400;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tocLabel {
+  margin: 3px 0 0;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+}
+
+.subtitle {
+  margin: 3px 0 0;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+
+
+/* "Tracking live" chip shown beside the button when matched */
+
+
+
+/* ---- Body / scroll area ---- */
+.body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0;
+}
+
+/* ---- Calling-point list ---- */
+.stopList {
+  list-style: none;
+  margin: 0;
+  padding: 0 14px;
+}
+
+/* ---- Individual calling-point row ---- */
+.stopRow {
+  display: grid;
+  /* columns: timeline | dot | arr | dep | name */
+  grid-template-columns: 16px 10px auto auto 1fr;
+  column-gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  position: relative;
+}
+
+/* Vertical connecting line */
+.timeline {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: center;
+  width: 2px;
+  height: calc(100% + 12px);
+  background: color-mix(in oklab, var(--rail, oklch(0.46 0.2 20)) 30%, var(--border));
+  display: block;
+  position: absolute;
+  left: 7px;
+  top: -6px;
+}
+
+.stopList > li:first-child .timeline {
+  top: 50%;
+  height: 50%;
+}
+.stopList > li:last-child .timeline {
+  height: 50%;
+  top: -6px;
+}
+.stopList > li:only-child .timeline {
+  display: none;
+}
+
+/* Dot on the timeline */
+.dot {
+  grid-column: 2;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: oklch(0.46 0.2 20);
+  border: 2px solid white;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+}
+
+.stopList > li:first-child .dot,
+.stopList > li:last-child .dot {
+  width: 14px;
+  height: 14px;
+  border-width: 2.5px;
+}
+
+/* Arrival time */
+.arrTime {
+  grid-column: 3;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  min-width: 3.5ch;
+  text-align: right;
+}
+
+/* Departure time */
+.depTime {
+  grid-column: 4;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  min-width: 3.5ch;
+}
+
+.depTime::before {
+  content: '→';
+  margin-right: 2px;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+  opacity: 0.6;
+}
+
+/* Station name */
+.stopName {
+  grid-column: 5;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* "next stop" tag */
+.nextTag {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: oklch(0.46 0.2 20);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+/* Clickable rows (have coordinates) */
+.stopRowClickable {
+  cursor: pointer;
+  transition: background 0.1s ease, transform 0.08s ease;
+}
+.stopRowClickable:hover {
+  background: oklch(0 0 0 / 0.04);
+  transform: translateX(3px);
+}
+.stopRowClickable:active {
+  transform: translateX(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stopRowClickable:hover,
+  .stopRowClickable:active {
+    transform: none;
+  }
+}
+
+/* Non-clickable rows (no coordinates): visually muted */
+.stopRowNoCoords .stopName {
+  color: var(--muted-foreground);
+  font-weight: 400;
+}
+.stopRowNoCoords .dot {
+  background: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+/* Upcoming "next stop" highlight */
+.stopRowNext .dot {
+  background: oklch(0.46 0.2 20);
+  box-shadow: 0 0 0 3px oklch(0.46 0.2 20 / 0.25);
+}
+.stopRowNext .stopName {
+  font-weight: 700;
+}
+
+/* Past stops — dimmed */
+.stopRowPast .arrTime,
+.stopRowPast .depTime,
+.stopRowPast .stopName {
+  opacity: 0.42;
+}
+.stopRowPast .dot {
+  background: var(--muted-foreground);
+}
