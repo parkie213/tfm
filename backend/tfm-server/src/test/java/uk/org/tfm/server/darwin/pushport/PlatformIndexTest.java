@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.org.tfm.model.rail.PlatformUpdate;
 
-/** Unit tests for {@link PlatformIndex}. Index is now keyed by (headcode, tpl). */
+/** Unit tests for {@link PlatformIndex}. Index is now keyed by (dated RID, tpl). */
 class PlatformIndexTest {
 
   private PlatformIndex index;
@@ -23,7 +23,7 @@ class PlatformIndexTest {
 
   @Test
   void lookupMissReturnsEmpty() {
-    Optional<PlatformUpdate> result = index.lookup("1M26", "NTNG");
+    Optional<PlatformUpdate> result = index.lookup("rid1", "NTNG");
     assertTrue(result.isEmpty(), "a lookup on an empty index must return Optional.empty");
   }
 
@@ -32,7 +32,7 @@ class PlatformIndexTest {
     PlatformUpdate u = update("rid1", "NTNG", "3", Instant.now());
     index.put("1M26", u);
 
-    Optional<PlatformUpdate> result = index.lookup("1M26", "NTNG");
+    Optional<PlatformUpdate> result = index.lookup("rid1", "NTNG");
     assertTrue(result.isPresent());
     assertEquals("3", result.get().platform());
   }
@@ -45,7 +45,7 @@ class PlatformIndexTest {
     index.put("1M26", update("rid1", "NTNG", "3", older));
     index.put("1M26", update("rid1", "NTNG", "4", newer)); // newer — should win
 
-    assertEquals("4", index.lookup("1M26", "NTNG").orElseThrow().platform());
+    assertEquals("4", index.lookup("rid1", "NTNG").orElseThrow().platform());
   }
 
   @Test
@@ -58,7 +58,7 @@ class PlatformIndexTest {
 
     assertEquals(
         "4",
-        index.lookup("1M26", "NTNG").orElseThrow().platform(),
+        index.lookup("rid1", "NTNG").orElseThrow().platform(),
         "an older update must not overwrite a newer one");
   }
 
@@ -76,8 +76,8 @@ class PlatformIndexTest {
 
     assertEquals(1, removed, "exactly one stale entry should be evicted");
     assertEquals(1, index.size());
-    assertTrue(index.lookup("1M26", "NTNG").isEmpty(), "stale entry must be gone");
-    assertTrue(index.lookup("1L50", "LEI").isPresent(), "fresh entry must survive");
+    assertTrue(index.lookup("rid1", "NTNG").isEmpty(), "stale entry must be gone");
+    assertTrue(index.lookup("ridB", "LEI").isPresent(), "fresh entry must survive");
   }
 
   @Test
@@ -107,19 +107,19 @@ class PlatformIndexTest {
     index.put("1L50", update("rid2", "NTNG", "5", Instant.now()));
 
     assertEquals(3, index.size());
-    assertEquals("3", index.lookup("1M26", "NTNG").orElseThrow().platform());
-    assertEquals("1", index.lookup("1M26", "LEICR").orElseThrow().platform());
-    assertEquals("5", index.lookup("1L50", "NTNG").orElseThrow().platform());
+    assertEquals("3", index.lookup("rid1", "NTNG").orElseThrow().platform());
+    assertEquals("1", index.lookup("rid1", "LEICR").orElseThrow().platform());
+    assertEquals("5", index.lookup("rid2", "NTNG").orElseThrow().platform());
   }
 
-  // Verify that PlatformUpdate.rid() is preserved even though it is not the index key.
+  // The dated RID is the lookup key; headcode remains display metadata.
   @Test
   void ridFieldIsPreservedOnUpdate() {
     PlatformUpdate u = update("202606121234567", "NTNG", "3", Instant.now());
     index.put("1M26", u);
     assertEquals(
         "202606121234567",
-        index.lookup("1M26", "NTNG").orElseThrow().rid(),
+        index.lookup("202606121234567", "NTNG").orElseThrow().rid(),
         "rid is retained on PlatformUpdate for debug/reference");
   }
 
@@ -176,6 +176,13 @@ class PlatformIndexTest {
         "1Y29",
         stored.get(0).headcode(),
         "Stored.headcode() must equal the headcode passed to put()");
+  }
+
+  @Test
+  void reusedHeadcodesDoNotOverwriteSeparateRuns() {
+    index.put("1M26", update("run1", "NTNG", "1", Instant.now()));
+    index.put("1M26", update("run2", "NTNG", "1", Instant.now()));
+    assertEquals(2, index.forTpl("NTNG").size());
   }
 
   // ---- helper ----

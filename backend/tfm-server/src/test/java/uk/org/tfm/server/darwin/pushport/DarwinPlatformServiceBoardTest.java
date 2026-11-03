@@ -159,6 +159,30 @@ class DarwinPlatformServiceBoardTest {
   }
 
   @Test
+  void reusedHeadcodeOnSharedPlatformDoesNotShareActualArrival() {
+    TrainScheduleStore dao =
+        new StubTrainScheduleStore() {
+          @Override
+          public Optional<String> headcodeForRid(String rid) {
+            return Optional.of("1F77");
+          }
+        };
+    var svc = new DarwinPlatformService(new PlatformIndex(), dao, EMPTY_PLATFORM_DAO, SCOPE);
+    var now = Instant.now();
+    svc.onUpdate(new PlatformUpdate("run1", "NTNG", "3", true, false, "P", now));
+    svc.onUpdate(new PlatformUpdate("run2", "NTNG", "3", false, false, "P", now));
+    svc.onMovementSnapshot(new MovementSnapshot("run1", "NTNG", "16:58", "", "", "", "", "", now));
+    var trains = svc.stationBoard("NTNG").get(0).trains();
+    assertEquals(2, trains.size());
+    var first = trains.stream().filter(t -> t.rid().equals("run1")).findFirst().orElseThrow();
+    var second = trains.stream().filter(t -> t.rid().equals("run2")).findFirst().orElseThrow();
+    assertTrue(first.atPlatformNow());
+    assertTrue(first.confirmed());
+    assertFalse(second.atPlatformNow());
+    assertFalse(second.confirmed());
+  }
+
+  @Test
   void occupantDegradesToEmptyStringsWhenScheduleAbsent() {
     // The schedule store returns Optional.empty() → origin/destination = "".
     PlatformIndex idx = new PlatformIndex();

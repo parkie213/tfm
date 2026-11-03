@@ -51,11 +51,13 @@ public final class DarwinPlatformService {
    * @param confirmed {@code true} if Darwin has operationally confirmed the platform assignment
    */
   public record Occupant(
+      String rid,
       String headcode,
       String origin,
       String destination,
       boolean confirmed,
-      boolean atPlatformNow) {}
+      boolean atPlatformNow,
+      boolean departed) {}
 
   /**
    * One row in the station platform board: a platform label and the trains currently on it. Empty
@@ -69,7 +71,7 @@ public final class DarwinPlatformService {
   private final PlatformIndex index;
 
   /**
-   * Merged movement state (arr/dep actuals + estimates) per (headcode, tpl). Owned by this service
+   * Merged movement state (arr/dep actuals + estimates) per (dated RID, tpl). Owned by this service
    * rather than injected: it is consulted only here for the board's "at platform now" signal.
    * In-memory only and never persisted (the TS firehose must not hit the DB at sweep rate).
    * Populated on the consumer thread by {@link #onMovementSnapshot}, TTL-swept alongside {@link
@@ -195,13 +197,16 @@ public final class DarwinPlatformService {
           origin = scope.nameForTpl(schedule.get().originTpl()).orElse(schedule.get().originTpl());
           destination = scope.nameForTpl(schedule.get().destTpl()).orElse(schedule.get().destTpl());
         }
-        boolean atPlatformNow =
-            movementIndex
-                .lookup(s.headcode(), s.update().tpl())
-                .map(MovementSnapshot::atPlatformNow)
-                .orElse(false);
+        var movement = movementIndex.lookup(s.update().rid(), s.update().tpl());
         occupants.add(
-            new Occupant(s.headcode(), origin, destination, s.update().confirmed(), atPlatformNow));
+            new Occupant(
+                s.update().rid(),
+                s.headcode(),
+                origin,
+                destination,
+                s.update().confirmed(),
+                movement.map(MovementSnapshot::atPlatformNow).orElse(false),
+                movement.map(m -> !m.depAt().isBlank() || !m.passAt().isBlank()).orElse(false)));
       }
       board.add(new PlatformLine(platform, occupants));
     }
@@ -251,7 +256,7 @@ public final class DarwinPlatformService {
       droppedNoSchedule.increment();
       return;
     }
-    movementIndex.merge(headcode, movement);
+    movementIndex.merge(movement.rid(), movement);
   }
 
   /** A missing schedule is retried on later updates; null is never cached. */

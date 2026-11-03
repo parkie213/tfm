@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package tfm.v1;
 
+import "tfm/v1/boards.proto";
+
 option java_package = "uk.org.tfm.proto.v1";
 option java_multiple_files = true;
 option java_outer_classname = "TrainsProto";
@@ -14,8 +16,8 @@ message GetStationPlatformsRequest {
   string crs = 1;
 }
 
-// A train currently associated with a platform at the station (from Darwin), enriched with its
-// origin/destination from the loaded timetable where known.
+// A REST board service or a Kafka fallback observation associated with a platform.
+// REST rows have unknown confirmation/presence; no cross-source identity bridge is available.
 message PlatformOccupant {
   // 4-char signalling headcode, e.g. "2O28".
   string headcode = 1;
@@ -29,27 +31,41 @@ message PlatformOccupant {
   // True if Darwin movement shows the service has arrived but not yet departed — standing at the
   // platform right now (arr.at present, dep.at absent). Distinct from platform_confirmed.
   bool at_platform_now = 6;
+  // Source-scoped identity; REST service IDs and Darwin RIDs are never interchangeable.
+  string identity = 7;
+  // Present only for REST board occupants. Times remain REST authoritative.
+  StationBoardRow board_row = 8;
+  // Unknown includes REST rows and Kafka entries without arrival/departure actuals.
+  PlatformPresence presence = 9;
 }
 
-// One platform and the train(s) currently on it. Normally 0 (empty) or 1 occupant.
+enum PlatformPresence {
+  PLATFORM_PRESENCE_UNKNOWN = 0;
+  PLATFORM_PRESENCE_PRESENT = 1;
+  PLATFORM_PRESENCE_DEPARTED = 2;
+}
+
+// One platform and its upcoming board services or fallback Kafka observations.
+// An empty list does not prove that the physical platform is clear.
 message StationPlatform {
   // Platform label as Darwin reports it, e.g. "1", "3A".
   string platform = 1;
   repeated PlatformOccupant trains = 2;
 }
 
-// The platform board for a station: every platform we have observed, each with its current occupant
-// or empty. Platforms are those seen from Darwin since startup (no static platform inventory exists).
+// Persisted platform inventory plus reconciled occupants. REST board rows take precedence on
+// each platform (next two); Kafka-only occupants are a fallback, never an identity match.
 message GetStationPlatformsResponse {
   string crs = 1;
   string station_name = 2;
   repeated StationPlatform platforms = 3;
   // RFC3339 timestamp of when this board was computed.
   string generated_at = 4;
-  // False when the Darwin platform feed is switched off for this server (DARWIN_KAFKA_ENABLED=false):
-  // the board will be empty, and the client should show a "live platform data unavailable" notice
-  // rather than "no trains".
+  // Configuration only: a consumer starting at latest may have incomplete state.
   bool platform_feed_enabled = 5;
+  bool board_available = 6;
+  // True if the platform inventory/enrichment read succeeded; not a completeness guarantee.
+  bool platform_data_available = 7;
 }
 
 // ---- Train service detail (calling points from the Darwin timetable) ----

@@ -246,6 +246,8 @@ export const TfmService: GenService<{
    * Platforms can be empty, and occupancy depends on available schedule and movement data.
    * Does not yet reconcile occupants with live arrival/departure board rows. Unexpected
    * assembly failures return INTERNAL.
+   * Reconciles persisted inventory with REST board services; Kafka observations are a fallback.
+   * REST service IDs are not Darwin RIDs: presence is unknown without a verified identity bridge.
    *
    * @generated from rpc tfm.v1.TfmService.GetStationPlatforms
    */

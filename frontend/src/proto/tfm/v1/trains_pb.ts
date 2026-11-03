@@ -2,15 +2,17 @@
 // @generated from file tfm/v1/trains.proto (package tfm.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
+import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { StationBoardRow } from "./boards_pb";
+import { file_tfm_v1_boards } from "./boards_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file tfm/v1/trains.proto.
  */
 export const file_tfm_v1_trains: GenFile = /*@__PURE__*/
-  fileDesc("ChN0Zm0vdjEvdHJhaW5zLnByb3RvEgZ0Zm0udjEiKQoaR2V0U3RhdGlvblBsYXRmb3Jtc1JlcXVlc3QSCwoDY3JzGAEgASgJIo4BChBQbGF0Zm9ybU9jY3VwYW50EhAKCGhlYWRjb2RlGAEgASgJEg4KBm9yaWdpbhgDIAEoCRITCgtkZXN0aW5hdGlvbhgEIAEoCRIaChJwbGF0Zm9ybV9jb25maXJtZWQYBSABKAgSFwoPYXRfcGxhdGZvcm1fbm93GAYgASgISgQIAhADUgh0cmFpbl9pZCJNCg9TdGF0aW9uUGxhdGZvcm0SEAoIcGxhdGZvcm0YASABKAkSKAoGdHJhaW5zGAIgAygLMhgudGZtLnYxLlBsYXRmb3JtT2NjdXBhbnQioQEKG0dldFN0YXRpb25QbGF0Zm9ybXNSZXNwb25zZRILCgNjcnMYASABKAkSFAoMc3RhdGlvbl9uYW1lGAIgASgJEioKCXBsYXRmb3JtcxgDIAMoCzIXLnRmbS52MS5TdGF0aW9uUGxhdGZvcm0SFAoMZ2VuZXJhdGVkX2F0GAQgASgJEh0KFXBsYXRmb3JtX2ZlZWRfZW5hYmxlZBgFIAEoCCJmChZHZXRUcmFpblNlcnZpY2VSZXF1ZXN0EgsKA2NycxgBIAEoCRIWCg5zY2hlZHVsZWRfdGltZRgCIAEoCRITCgtkZXN0aW5hdGlvbhgDIAEoCRISCgppc19hcnJpdmFsGAQgASgIIn4KEVRyYWluQ2FsbGluZ1BvaW50EhAKCHNlcXVlbmNlGAEgASgFEgsKA3RwbBgCIAEoCRIMCgRuYW1lGAMgASgJEgsKA2xhdBgEIAEoARILCgNsbmcYBSABKAESDwoHYXJyaXZhbBgGIAEoCRIRCglkZXBhcnR1cmUYByABKAkisAEKF0dldFRyYWluU2VydmljZVJlc3BvbnNlEg0KBWZvdW5kGAEgASgIEgsKA3JpZBgCIAEoCRIQCghoZWFkY29kZRgDIAEoCRILCgN0b2MYBCABKAkSDgoGb3JpZ2luGAUgASgJEhMKC2Rlc3RpbmF0aW9uGAYgASgJEigKBXN0b3BzGAcgAygLMhkudGZtLnYxLlRyYWluQ2FsbGluZ1BvaW50SgQICBAJUgVzaGFwZUIkChN1ay5vcmcudGZtLnByb3RvLnYxQgtUcmFpbnNQcm90b1ABYgZwcm90bzM");
+  fileDesc("ChN0Zm0vdjEvdHJhaW5zLnByb3RvEgZ0Zm0udjEiKQoaR2V0U3RhdGlvblBsYXRmb3Jtc1JlcXVlc3QSCwoDY3JzGAEgASgJIvgBChBQbGF0Zm9ybU9jY3VwYW50EhAKCGhlYWRjb2RlGAEgASgJEg4KBm9yaWdpbhgDIAEoCRITCgtkZXN0aW5hdGlvbhgEIAEoCRIaChJwbGF0Zm9ybV9jb25maXJtZWQYBSABKAgSFwoPYXRfcGxhdGZvcm1fbm93GAYgASgIEhAKCGlkZW50aXR5GAcgASgJEioKCWJvYXJkX3JvdxgIIAEoCzIXLnRmbS52MS5TdGF0aW9uQm9hcmRSb3cSKgoIcHJlc2VuY2UYCSABKA4yGC50Zm0udjEuUGxhdGZvcm1QcmVzZW5jZUoECAIQA1IIdHJhaW5faWQiTQoPU3RhdGlvblBsYXRmb3JtEhAKCHBsYXRmb3JtGAEgASgJEigKBnRyYWlucxgCIAMoCzIYLnRmbS52MS5QbGF0Zm9ybU9jY3VwYW50ItsBChtHZXRTdGF0aW9uUGxhdGZvcm1zUmVzcG9uc2USCwoDY3JzGAEgASgJEhQKDHN0YXRpb25fbmFtZRgCIAEoCRIqCglwbGF0Zm9ybXMYAyADKAsyFy50Zm0udjEuU3RhdGlvblBsYXRmb3JtEhQKDGdlbmVyYXRlZF9hdBgEIAEoCRIdChVwbGF0Zm9ybV9mZWVkX2VuYWJsZWQYBSABKAgSFwoPYm9hcmRfYXZhaWxhYmxlGAYgASgIEh8KF3BsYXRmb3JtX2RhdGFfYXZhaWxhYmxlGAcgASgIImYKFkdldFRyYWluU2VydmljZVJlcXVlc3QSCwoDY3JzGAEgASgJEhYKDnNjaGVkdWxlZF90aW1lGAIgASgJEhMKC2Rlc3RpbmF0aW9uGAMgASgJEhIKCmlzX2Fycml2YWwYBCABKAgifgoRVHJhaW5DYWxsaW5nUG9pbnQSEAoIc2VxdWVuY2UYASABKAUSCwoDdHBsGAIgASgJEgwKBG5hbWUYAyABKAkSCwoDbGF0GAQgASgBEgsKA2xuZxgFIAEoARIPCgdhcnJpdmFsGAYgASgJEhEKCWRlcGFydHVyZRgHIAEoCSKwAQoXR2V0VHJhaW5TZXJ2aWNlUmVzcG9uc2USDQoFZm91bmQYASABKAgSCwoDcmlkGAIgASgJEhAKCGhlYWRjb2RlGAMgASgJEgsKA3RvYxgEIAEoCRIOCgZvcmlnaW4YBSABKAkSEwoLZGVzdGluYXRpb24YBiABKAkSKAoFc3RvcHMYByADKAsyGS50Zm0udjEuVHJhaW5DYWxsaW5nUG9pbnRKBAgIEAlSBXNoYXBlKnAKEFBsYXRmb3JtUHJlc2VuY2USHQoZUExBVEZPUk1fUFJFU0VOQ0VfVU5LTk9XThAAEh0KGVBMQVRGT1JNX1BSRVNFTkNFX1BSRVNFTlQQARIeChpQTEFURk9STV9QUkVTRU5DRV9ERVBBUlRFRBACQiQKE3VrLm9yZy50Zm0ucHJvdG8udjFCC1RyYWluc1Byb3RvUAFiBnByb3RvMw", [file_tfm_v1_boards]);
 
 /**
  * Request the live platform-occupancy board for one station.
@@ -34,8 +36,8 @@ export const GetStationPlatformsRequestSchema: GenMessage<GetStationPlatformsReq
   messageDesc(file_tfm_v1_trains, 0);
 
 /**
- * A train currently associated with a platform at the station (from Darwin), enriched with its
- * origin/destination from the loaded timetable where known.
+ * A REST board service or a Kafka fallback observation associated with a platform.
+ * REST rows have unknown confirmation/presence; no cross-source identity bridge is available.
  *
  * @generated from message tfm.v1.PlatformOccupant
  */
@@ -73,6 +75,27 @@ export type PlatformOccupant = Message<"tfm.v1.PlatformOccupant"> & {
    * @generated from field: bool at_platform_now = 6;
    */
   atPlatformNow: boolean;
+
+  /**
+   * Source-scoped identity; REST service IDs and Darwin RIDs are never interchangeable.
+   *
+   * @generated from field: string identity = 7;
+   */
+  identity: string;
+
+  /**
+   * Present only for REST board occupants. Times remain REST authoritative.
+   *
+   * @generated from field: tfm.v1.StationBoardRow board_row = 8;
+   */
+  boardRow?: StationBoardRow | undefined;
+
+  /**
+   * Unknown includes REST rows and Kafka entries without arrival/departure actuals.
+   *
+   * @generated from field: tfm.v1.PlatformPresence presence = 9;
+   */
+  presence: PlatformPresence;
 };
 
 /**
@@ -83,7 +106,8 @@ export const PlatformOccupantSchema: GenMessage<PlatformOccupant> = /*@__PURE__*
   messageDesc(file_tfm_v1_trains, 1);
 
 /**
- * One platform and the train(s) currently on it. Normally 0 (empty) or 1 occupant.
+ * One platform and its upcoming board services or fallback Kafka observations.
+ * An empty list does not prove that the physical platform is clear.
  *
  * @generated from message tfm.v1.StationPlatform
  */
@@ -109,8 +133,8 @@ export const StationPlatformSchema: GenMessage<StationPlatform> = /*@__PURE__*/
   messageDesc(file_tfm_v1_trains, 2);
 
 /**
- * The platform board for a station: every platform we have observed, each with its current occupant
- * or empty. Platforms are those seen from Darwin since startup (no static platform inventory exists).
+ * Persisted platform inventory plus reconciled occupants. REST board rows take precedence on
+ * each platform (next two); Kafka-only occupants are a fallback, never an identity match.
  *
  * @generated from message tfm.v1.GetStationPlatformsResponse
  */
@@ -138,13 +162,23 @@ export type GetStationPlatformsResponse = Message<"tfm.v1.GetStationPlatformsRes
   generatedAt: string;
 
   /**
-   * False when the Darwin platform feed is switched off for this server (DARWIN_KAFKA_ENABLED=false):
-   * the board will be empty, and the client should show a "live platform data unavailable" notice
-   * rather than "no trains".
+   * Configuration only: a consumer starting at latest may have incomplete state.
    *
    * @generated from field: bool platform_feed_enabled = 5;
    */
   platformFeedEnabled: boolean;
+
+  /**
+   * @generated from field: bool board_available = 6;
+   */
+  boardAvailable: boolean;
+
+  /**
+   * True if the platform inventory/enrichment read succeeded; not a completeness guarantee.
+   *
+   * @generated from field: bool platform_data_available = 7;
+   */
+  platformDataAvailable: boolean;
 };
 
 /**
@@ -311,4 +345,30 @@ export type GetTrainServiceResponse = Message<"tfm.v1.GetTrainServiceResponse"> 
  */
 export const GetTrainServiceResponseSchema: GenMessage<GetTrainServiceResponse> = /*@__PURE__*/
   messageDesc(file_tfm_v1_trains, 6);
+
+/**
+ * @generated from enum tfm.v1.PlatformPresence
+ */
+export enum PlatformPresence {
+  /**
+   * @generated from enum value: PLATFORM_PRESENCE_UNKNOWN = 0;
+   */
+  UNKNOWN = 0,
+
+  /**
+   * @generated from enum value: PLATFORM_PRESENCE_PRESENT = 1;
+   */
+  PRESENT = 1,
+
+  /**
+   * @generated from enum value: PLATFORM_PRESENCE_DEPARTED = 2;
+   */
+  DEPARTED = 2,
+}
+
+/**
+ * Describes the enum tfm.v1.PlatformPresence.
+ */
+export const PlatformPresenceSchema: GenEnum<PlatformPresence> = /*@__PURE__*/
+  enumDesc(file_tfm_v1_trains, 0);
 

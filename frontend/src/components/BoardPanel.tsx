@@ -72,7 +72,7 @@ function StationBoardView({
         crs={crs}
         onSelectTrainService={onSelectTrainService}
       />
-      {crs && <StationPlatformBoard crs={crs} boardRows={rows} />}
+      {crs && <StationPlatformBoard crs={crs} />}
     </>
   )
 }

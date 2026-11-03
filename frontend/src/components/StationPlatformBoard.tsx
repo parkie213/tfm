@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react'
 import type { PlatformOccupant } from '../proto/tfm/v1/trains_pb'
-import type { StationBoardRow } from '../hooks/useDepartures'
 import { useStationPlatforms } from '../hooks/useStationPlatforms'
 import styles from './StationPlatformBoard.module.css'
 
@@ -42,26 +41,14 @@ interface DisplayOccupant {
 }
 
 /** Live board row → display: "Origin → Destination" with its time and status. */
-function fromBoardRow(r: StationBoardRow, confirmed: boolean, atPlatform: boolean): DisplayOccupant {
-  const dest =
-    r.origin && r.destination ? `${r.origin} → ${r.destination}` : r.destination || r.origin || 'Train'
-  const side = r.dep ?? r.arr
-  let meta: string | null = null
-  if (side) {
-    const reTimed = /^\d{1,2}:\d{2}$/.test(side.expected) && side.expected !== side.scheduled
-    meta = reTimed ? `${side.scheduled} → ${side.expected}` : `${side.scheduled} · ${side.status}`
-  }
-  return { key: r.serviceId || dest, dest, meta, confirmed, atPlatform }
-}
-
-function fromPushPort(
-  t: PlatformOccupant,
-): DisplayOccupant {
+function fromOccupant(t: PlatformOccupant, index: number): DisplayOccupant {
   const route = t.origin && t.destination ? `${t.origin} → ${t.destination}` : t.destination || t.origin
+  const side = t.boardRow?.dep ?? t.boardRow?.arr
+  const reTimed = side && /^\d{1,2}:\d{2}$/.test(side.expected) && side.expected !== side.scheduled
   return {
-    key: t.headcode || route || 'occ',
+    key: `${t.identity}:${index}`,
     dest: route || t.headcode || 'Train',
-    meta: null,
+    meta: side ? (reTimed ? `${side.scheduled} → ${side.expected}` : `${side.scheduled} · ${side.status}`) : null,
     confirmed: t.platformConfirmed,
     atPlatform: t.atPlatformNow,
   }
@@ -116,71 +103,25 @@ function PlatformRow({
   )
 }
 
-interface Props {
-  crs: string
-  /**
-   * Live departures + arrivals for this station (the LDB feed, via {@code useStationBoard}). The
-   * primary occupant source: it carries each service's platform, origin and destination and works
-   * with no Darwin Timetable loaded — unlike the push-port path, which needs the timetable to resolve
-   * a train and so goes empty whenever the snapshot expires.
-   */
-  boardRows: StationBoardRow[]
-}
-
-/**
- * Live platform board for a National Rail station. The platform *layout* comes from
- * {@code getStationPlatforms} (the persisted {@code station_platforms} inventory, so every platform
- * shows even when empty). Occupants come from the live departure/arrival board ({@code boardRows}),
- * which needs no timetable; the Darwin push-port feed is layered on as a *confirmed* marker (and as a
- * fallback occupant source for platforms the board doesn't cover). Useful even when the timetable
- * snapshot has expired or the push-port feed is switched off.
- */
-export function StationPlatformBoard({ crs, boardRows }: Props) {
+/** Renders the reconciled platform occupants supplied by Java. */
+export function StationPlatformBoard({ crs }: { crs: string }) {
   const { data, loading, error } = useStationPlatforms(crs)
-
-  if (loading && !data && boardRows.length === 0) return <PlatformSkeleton />
-  if (error && boardRows.length === 0) return <PlatformError message={error} />
-
-  const layout = data?.platforms ?? []
-
-  // Group live board services by their platform (soonest first); skip rows with no platform yet.
-  const boardByPlatform = new Map<string, StationBoardRow[]>()
-  for (const r of boardRows) {
-    const p = r.platform.trim()
-    if (!p) continue
-    const list = boardByPlatform.get(p)
-    if (list) list.push(r)
-    else boardByPlatform.set(p, [r])
-  }
-  for (const list of boardByPlatform.values()) list.sort((a, b) => a.sortSecs - b.sortSecs)
-
-  // Push-port occupants per platform (timetable-dependent; the confirmation source).
-  const pushByPlatform = new Map<string, PlatformOccupant[]>(layout.map((p) => [p.platform, p.trains]))
-
-  // Platform order: the persisted layout first (already naturally sorted server-side), then any
-  // platform that only the live board knows about.
-  const labels = layout.map((p) => p.platform)
-  for (const p of boardByPlatform.keys()) if (!labels.includes(p)) labels.push(p)
-
-  const rows = labels.map((label) => {
-    const board = boardByPlatform.get(label) ?? []
-    const push = pushByPlatform.get(label) ?? []
-    const confirmed = push.some((t) => t.platformConfirmed)
-    // Darwin movement says a service is standing here now (arr.at ∧ ¬dep.at). The live board can't
-    // know this, so it's layered on like the confirmed marker.
-    const atPlatform = push.some((t) => t.atPlatformNow)
-    // Prefer the board (works without the timetable); fall back to push-port occupants so we never
-    // show less than before. Two soonest keep a busy platform readable.
-    const occupants =
-      board.length > 0
-        ? board.slice(0, 2).map((r) => fromBoardRow(r, confirmed, atPlatform))
-        : push.map((t) => fromPushPort(t))
-    return { label, occupants }
-  })
+  if (loading && !data) return <PlatformSkeleton />
+  if (error && !data) return <PlatformError message={error} />
+  const rows = (data?.platforms ?? []).map(p => ({
+    label: p.platform,
+    occupants: p.trains.map(fromOccupant),
+  }))
 
   return (
     <div className={styles.wrapper}>
       <h3 className={styles.heading}>Live platforms</h3>
+      {data && !data.boardAvailable && (
+        <p role="status">Live train board unavailable. Showing available Darwin platform observations.</p>
+      )}
+      {data && !data.platformDataAvailable && (
+        <p role="status">Platform inventory and movement data unavailable. Showing live board services.</p>
+      )}
 
       {rows.length === 0 ? (
         <div className={styles.empty} role="status">

@@ -112,6 +112,8 @@ service TfmService {
   // Platforms can be empty, and occupancy depends on available schedule and movement data.
   // Does not yet reconcile occupants with live arrival/departure board rows. Unexpected
   // assembly failures return INTERNAL.
+  // Reconciles persisted inventory with REST board services; Kafka observations are a fallback.
+  // REST service IDs are not Darwin RIDs: presence is unknown without a verified identity bridge.
   rpc GetStationPlatforms(GetStationPlatformsRequest) returns (GetStationPlatformsResponse);
 
   // Resolves a train-board row to stored Darwin calling points using station, scheduled

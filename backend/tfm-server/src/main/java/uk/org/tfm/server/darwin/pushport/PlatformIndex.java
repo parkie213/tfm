@@ -11,11 +11,10 @@ import javax.inject.Singleton;
 import uk.org.tfm.model.rail.PlatformUpdate;
 
 /**
- * Thread-safe in-memory index of the most recent {@link PlatformUpdate} per (headcode, tpl) pair.
+ * Thread-safe in-memory index of the most recent {@link PlatformUpdate} per (dated RID, tpl) pair.
  *
- * <p>The index key is {@code headcode + "|" + tpl} where {@code headcode} is the 4-char TRUST
- * signalling ID (Darwin {@code train_id}) resolved from the incoming {@code rid} by {@link
- * DarwinPlatformService}, allowing station boards to correlate platform and movement state.
+ * <p>The index key is {@code rid + "|" + tpl} where the RID identifies a dated run; reusable
+ * headcodes are display metadata only.
  *
  * <p>Updates are accepted on a newest-{@link PlatformUpdate#at()}-wins basis: a later-timestamped
  * update always replaces an earlier one, and an earlier one is silently dropped. Stale entries are
@@ -30,8 +29,8 @@ public final class PlatformIndex {
 
   /**
    * The value held in the index: the resolved headcode paired with the platform update. Exposed so
-   * the station-board builder can recover the headcode (which is the index key, not part of the
-   * update itself) without a second lookup.
+   * the station-board builder can recover the headcode (display metadata outside the update itself)
+   * without a second lookup.
    */
   public record Stored(String headcode, PlatformUpdate update) {}
 
@@ -41,7 +40,7 @@ public final class PlatformIndex {
   public PlatformIndex() {}
 
   /**
-   * Stores {@code update} under the given {@code headcode} + {@code update.tpl()} key, if no entry
+   * Stores {@code update} under the {@code update.rid()} + {@code update.tpl()} key, if no entry
    * exists for that pair or if the existing entry is older (by {@link PlatformUpdate#at()}) than
    * the incoming one.
    *
@@ -49,7 +48,7 @@ public final class PlatformIndex {
    * @param update the platform update to store
    */
   public void put(String headcode, PlatformUpdate update) {
-    String key = key(headcode, update.tpl());
+    String key = key(update.rid(), update.tpl());
     Stored incoming = new Stored(headcode, update);
     index.merge(
         key,
@@ -59,14 +58,14 @@ public final class PlatformIndex {
   }
 
   /**
-   * Returns the most recent {@link PlatformUpdate} for the given train headcode and location, or
-   * {@link Optional#empty()} if none is held.
+   * Returns the most recent {@link PlatformUpdate} for the given dated RID and location, or {@link
+   * Optional#empty()} if none is held.
    *
-   * @param headcode the 4-char TRUST signalling ID
+   * @param rid the dated Darwin run ID
    * @param tpl the TIPLOC of the location
    */
-  public Optional<PlatformUpdate> lookup(String headcode, String tpl) {
-    Stored stored = index.get(key(headcode, tpl));
+  public Optional<PlatformUpdate> lookup(String rid, String tpl) {
+    Stored stored = index.get(key(rid, tpl));
     return stored == null ? Optional.empty() : Optional.of(stored.update());
   }
 
@@ -118,7 +117,7 @@ public final class PlatformIndex {
     return index.size();
   }
 
-  private static String key(String headcode, String tpl) {
-    return headcode + "|" + tpl;
+  private static String key(String rid, String tpl) {
+    return rid + "|" + tpl;
   }
 }

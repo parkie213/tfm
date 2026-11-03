@@ -616,10 +616,10 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
   }
 
   /**
-   * Returns the persisted platform inventory and Darwin-derived occupants for a CRS station.
-   * Platforms can be empty, and occupancy depends on available schedule and movement data. Does not
-   * yet reconcile occupants with live arrival/departure board rows. Unexpected assembly failures
-   * return INTERNAL.
+   * Returns persisted platform inventory with reconciled REST board services and Kafka fallback
+   * observations. REST IDs are not Darwin RIDs; REST presence remains unknown. Partial source
+   * failures are reported in the response; failure of both sources returns INTERNAL. Empty
+   * platforms do not establish physical absence, and Kafka state may be incomplete.
    */
   @Override
   public void getStationPlatforms(

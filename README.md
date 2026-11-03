@@ -263,3 +263,21 @@ and attributions.
 <br>
 <sub>Made for Melton Mowbray. Powered by pies.</sub>
 </div>
+
+### Platform reconciliation
+
+`GetStationPlatforms` assembles the persisted platform layout and the combined REST station board
+in Java. Each platform shows its next two REST services in scheduled order; where REST has no
+assigned service, the API falls back to available Kafka platform observations. Either source can
+fail independently. `board_available` and `platform_data_available` describe successful reads,
+while `platform_feed_enabled` describes Kafka configuration, not completeness.
+
+REST LDBWS service IDs are not Darwin RIDs. There is currently no verified bridge between them,
+so REST occupants retain unknown presence and never inherit another train's platform confirmation
+or actual arrival. Kafka platform and movement state correlate by dated RID and station, rather
+than reusable headcode. A Kafka observation distinguishes unknown presence, actual arrival without
+departure, and observed departure/passage. Empty inventory rows do not prove a platform is clear.
+A fresh Kafka consumer starts at latest and cannot reconstruct complete occupancy automatically.
+REST remains authoritative for board times, cancellation and coach information (30-second cache);
+Kafka movement forecasts do not replace those times. Platform polling remains every ten seconds,
+separate from the station board's fifteen-second browser stream.
