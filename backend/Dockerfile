@@ -1,7 +1,7 @@
 # Multi-stage build for the TFM gRPC server.
 # Build context must be the backend/ directory.
 
-FROM maven:3-eclipse-temurin-25 AS build
+FROM maven:3-eclipse-temurin-27 AS build
 WORKDIR /build
 # Copy poms first for better layer caching of dependency resolution.
 COPY pom.xml .
