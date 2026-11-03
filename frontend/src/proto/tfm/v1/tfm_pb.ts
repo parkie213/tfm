@@ -24,10 +24,18 @@ export const file_tfm_v1_tfm: GenFile = /*@__PURE__*/
   fileDesc("ChB0Zm0vdjEvdGZtLnByb3RvEgZ0Zm0udjEynA0KClRmbVNlcnZpY2USUgoPR2V0U3RhdGlvbkJvYXJkEh4udGZtLnYxLkdldFN0YXRpb25Cb2FyZFJlcXVlc3QaHy50Zm0udjEuR2V0U3RhdGlvbkJvYXJkUmVzcG9uc2USVwoSU3RyZWFtU3RhdGlvbkJvYXJkEh4udGZtLnYxLkdldFN0YXRpb25Cb2FyZFJlcXVlc3QaHy50Zm0udjEuR2V0U3RhdGlvbkJvYXJkUmVzcG9uc2UwARJbChJHZXRUcmFpbkRlcGFydHVyZXMSIS50Zm0udjEuR2V0VHJhaW5EZXBhcnR1cmVzUmVxdWVzdBoiLnRmbS52MS5HZXRUcmFpbkRlcGFydHVyZXNSZXNwb25zZRJVChBHZXRUcmFpbkFycml2YWxzEh8udGZtLnYxLkdldFRyYWluQXJyaXZhbHNSZXF1ZXN0GiAudGZtLnYxLkdldFRyYWluQXJyaXZhbHNSZXNwb25zZRJVChBHZXRCdXNEZXBhcnR1cmVzEh8udGZtLnYxLkdldEJ1c0RlcGFydHVyZXNSZXF1ZXN0GiAudGZtLnYxLkdldEJ1c0RlcGFydHVyZXNSZXNwb25zZRJPCg5HZXRCdXNWZWhpY2xlcxIdLnRmbS52MS5HZXRCdXNWZWhpY2xlc1JlcXVlc3QaHi50Zm0udjEuR2V0QnVzVmVoaWNsZXNSZXNwb25zZRJbChJHZXRTdG9wc0luVmlld3BvcnQSIS50Zm0udjEuR2V0U3RvcHNJblZpZXdwb3J0UmVxdWVzdBoiLnRmbS52MS5HZXRTdG9wc0luVmlld3BvcnRSZXNwb25zZRJtChhHZXRSb3V0ZVNoYXBlc0luVmlld3BvcnQSJy50Zm0udjEuR2V0Um91dGVTaGFwZXNJblZpZXdwb3J0UmVxdWVzdBooLnRmbS52MS5HZXRSb3V0ZVNoYXBlc0luVmlld3BvcnRSZXNwb25zZRJGCgtTZWFyY2hTdG9wcxIaLnRmbS52MS5TZWFyY2hTdG9wc1JlcXVlc3QaGy50Zm0udjEuU2VhcmNoU3RvcHNSZXNwb25zZRJSCg9HZXRTZXJ2aWNlU3RvcHMSHi50Zm0udjEuR2V0U2VydmljZVN0b3BzUmVxdWVzdBofLnRmbS52MS5HZXRTZXJ2aWNlU3RvcHNSZXNwb25zZRJOCg1HZXRSb3V0ZVN0b3BzEhwudGZtLnYxLkdldFJvdXRlU3RvcHNSZXF1ZXN0Gh8udGZtLnYxLkdldFNlcnZpY2VTdG9wc1Jlc3BvbnNlElcKEVN0cmVhbUJ1c1ZlaGljbGVzEiAudGZtLnYxLlN0cmVhbUJ1c1ZlaGljbGVzUmVxdWVzdBoeLnRmbS52MS5HZXRCdXNWZWhpY2xlc1Jlc3BvbnNlMAESYAoVU3RyZWFtVHJhaW5EZXBhcnR1cmVzEiEudGZtLnYxLkdldFRyYWluRGVwYXJ0dXJlc1JlcXVlc3QaIi50Zm0udjEuR2V0VHJhaW5EZXBhcnR1cmVzUmVzcG9uc2UwARJaChNTdHJlYW1UcmFpbkFycml2YWxzEh8udGZtLnYxLkdldFRyYWluQXJyaXZhbHNSZXF1ZXN0GiAudGZtLnYxLkdldFRyYWluQXJyaXZhbHNSZXNwb25zZTABEloKE1N0cmVhbUJ1c0RlcGFydHVyZXMSHy50Zm0udjEuR2V0QnVzRGVwYXJ0dXJlc1JlcXVlc3QaIC50Zm0udjEuR2V0QnVzRGVwYXJ0dXJlc1Jlc3BvbnNlMAESXgoTR2V0U3RhdGlvblBsYXRmb3JtcxIiLnRmbS52MS5HZXRTdGF0aW9uUGxhdGZvcm1zUmVxdWVzdBojLnRmbS52MS5HZXRTdGF0aW9uUGxhdGZvcm1zUmVzcG9uc2USUgoPR2V0VHJhaW5TZXJ2aWNlEh4udGZtLnYxLkdldFRyYWluU2VydmljZVJlcXVlc3QaHy50Zm0udjEuR2V0VHJhaW5TZXJ2aWNlUmVzcG9uc2USVQoQR2V0TWFwRGF0YVN0YXR1cxIfLnRmbS52MS5HZXRNYXBEYXRhU3RhdHVzUmVxdWVzdBogLnRmbS52MS5HZXRNYXBEYXRhU3RhdHVzUmVzcG9uc2USTwoOR2V0RGF0YVNvdXJjZXMSHS50Zm0udjEuR2V0RGF0YVNvdXJjZXNSZXF1ZXN0Gh4udGZtLnYxLkdldERhdGFTb3VyY2VzUmVzcG9uc2VCIQoTdWsub3JnLnRmbS5wcm90by52MUIIVGZtUHJvdG9QAWIGcHJvdG8z", [file_tfm_v1_boards, file_tfm_v1_buses, file_tfm_v1_data_sources, file_tfm_v1_routes, file_tfm_v1_stops, file_tfm_v1_trains]);
 
 /**
+ * Public API for transport boards, live buses, catalogue search, and map geometry.
+ *
  * @generated from service tfm.v1.TfmService
  */
 export const TfmService: GenService<{
   /**
+   * Returns a combined arrival/departure board, joining rows by upstream service ID.
+   * Blank CRS defaults to Melton Mowbray (MMO). Departure details take precedence; arrivals
+   * fill missing details. Unconfigured or failed arrivals leave a departures-only response
+   * with arrivals_available=false. Returns UNIMPLEMENTED without departure credentials,
+   * and UNAVAILABLE when the required departure board cannot be loaded.
+   *
    * @generated from rpc tfm.v1.TfmService.GetStationBoard
    */
   getStationBoard: {
@@ -36,6 +44,12 @@ export const TfmService: GenService<{
     output: typeof GetStationBoardResponseSchema;
   },
   /**
+   * Subscribes to complete combined station-board snapshots using the same merge rules
+   * as GetStationBoard. Attempts an initial snapshot, then refreshes every 15 seconds through
+   * the upstream board caches. Failed frame computations skip that update without closing
+   * the stream; clients may retain their last snapshot. Missing departure credentials return
+   * UNIMPLEMENTED. Client cancellation removes the subscription.
+   *
    * @generated from rpc tfm.v1.TfmService.StreamStationBoard
    */
   streamStationBoard: {
@@ -44,6 +58,9 @@ export const TfmService: GenService<{
     output: typeof GetStationBoardResponseSchema;
   },
   /**
+   * Returns the cached Darwin departure board; blank CRS defaults to MMO.
+   * A non-positive row count uses the server default. Upstream failures return UNAVAILABLE.
+   *
    * @generated from rpc tfm.v1.TfmService.GetTrainDepartures
    */
   getTrainDepartures: {
@@ -52,6 +69,10 @@ export const TfmService: GenService<{
     output: typeof GetTrainDeparturesResponseSchema;
   },
   /**
+   * Returns the cached Darwin arrivals board; blank CRS defaults to MMO.
+   * Returns UNIMPLEMENTED when the optional arrivals product is not configured,
+   * or UNAVAILABLE if the board cannot be loaded.
+   *
    * @generated from rpc tfm.v1.TfmService.GetTrainArrivals
    */
   getTrainArrivals: {
@@ -60,6 +81,11 @@ export const TfmService: GenService<{
     output: typeof GetTrainArrivalsResponseSchema;
   },
   /**
+   * Returns scheduled bus departures for a required NaPTAN ATCO stop code.
+   * An empty date requests upcoming departures; a supplied date selects that day's timetable.
+   * Returns UNIMPLEMENTED when timetables are disabled, INVALID_ARGUMENT for a blank stop
+   * code, or UNAVAILABLE on a timetable query failure.
+   *
    * @generated from rpc tfm.v1.TfmService.GetBusDepartures
    */
   getBusDepartures: {
@@ -68,6 +94,10 @@ export const TfmService: GenService<{
     output: typeof GetBusDeparturesResponseSchema;
   },
   /**
+   * Returns the current bus snapshot without waiting for an upstream request.
+   * A valid bounding box filters vehicles; a degenerate box returns all vehicles. The snapshot
+   * may be empty or stale. Returns UNIMPLEMENTED when live buses are not configured.
+   *
    * @generated from rpc tfm.v1.TfmService.GetBusVehicles
    */
   getBusVehicles: {
@@ -76,6 +106,10 @@ export const TfmService: GenService<{
     output: typeof GetBusVehiclesResponseSchema;
   },
   /**
+   * Returns catalogue stops inside the bounding box, with truncated=true if capped.
+   * Returns INVALID_ARGUMENT for reversed, empty, or out-of-range bounds, and UNAVAILABLE
+   * on a catalogue query failure.
+   *
    * @generated from rpc tfm.v1.TfmService.GetStopsInViewport
    */
   getStopsInViewport: {
@@ -84,6 +118,10 @@ export const TfmService: GenService<{
     output: typeof GetStopsInViewportResponseSchema;
   },
   /**
+   * Returns shared bus-route geometry intersecting the bounding box, falling back to
+   * published GTFS shapes when no shared trunks are found. Results may be capped.
+   * Returns INVALID_ARGUMENT for invalid bounds or UNAVAILABLE on a spatial query failure.
+   *
    * @generated from rpc tfm.v1.TfmService.GetRouteShapesInViewport
    */
   getRouteShapesInViewport: {
@@ -92,6 +130,10 @@ export const TfmService: GenService<{
     output: typeof GetRouteShapesInViewportResponseSchema;
   },
   /**
+   * Returns stops and localities interleaved in relevance order, subject to the requested
+   * limit and server cap. Queries shorter than two characters after trimming return an empty
+   * response. Query failures return UNAVAILABLE.
+   *
    * @generated from rpc tfm.v1.TfmService.SearchStops
    */
   searchStops: {
@@ -100,6 +142,10 @@ export const TfmService: GenService<{
     output: typeof SearchStopsResponseSchema;
   },
   /**
+   * Returns the ordered calling points and available geometry of a GTFS trip.
+   * Returns UNIMPLEMENTED when timetables are disabled, INVALID_ARGUMENT for a blank trip ID,
+   * or UNAVAILABLE on a timetable query failure.
+   *
    * @generated from rpc tfm.v1.TfmService.GetServiceStops
    */
   getServiceStops: {
@@ -108,6 +154,10 @@ export const TfmService: GenService<{
     output: typeof GetServiceStopsResponseSchema;
   },
   /**
+   * Returns calling points and geometry for a representative trip of a named bus route.
+   * Long name and operator disambiguate reused route numbers. Returns UNIMPLEMENTED when
+   * timetables are disabled, INVALID_ARGUMENT for a blank short name, or UNAVAILABLE on failure.
+   *
    * @generated from rpc tfm.v1.TfmService.GetRouteStops
    */
   getRouteStops: {
@@ -116,7 +166,10 @@ export const TfmService: GenService<{
     output: typeof GetServiceStopsResponseSchema;
   },
   /**
-   * Server-streaming live bus positions within a viewport box (replaces the GetBusVehicles poll).
+   * Subscribes to current bus snapshots and subsequent poll updates. The bounding box
+   * filters vehicles; a requested tracked trip is included even outside it when available.
+   * Returns UNIMPLEMENTED when live buses are not configured. Client cancellation removes
+   * the subscription.
    *
    * @generated from rpc tfm.v1.TfmService.StreamBusVehicles
    */
@@ -126,8 +179,10 @@ export const TfmService: GenService<{
     output: typeof GetBusVehiclesResponseSchema;
   },
   /**
-   * Server-streaming departure boards (replace the polls). The server maintains the board and pushes
-   * the current state on subscribe and on each refresh; the client replaces its state per message.
+   * Subscribes to cached departure-board snapshots; blank CRS defaults to MMO.
+   * Attempts an initial snapshot and refreshes every 15 seconds. Failed frame computations
+   * skip an update without closing the stream. Returns UNIMPLEMENTED without departure
+   * credentials. Client cancellation removes the subscription.
    *
    * @generated from rpc tfm.v1.TfmService.StreamTrainDepartures
    */
@@ -137,6 +192,11 @@ export const TfmService: GenService<{
     output: typeof GetTrainDeparturesResponseSchema;
   },
   /**
+   * Subscribes to cached arrivals-board snapshots; blank CRS defaults to MMO.
+   * Attempts an initial snapshot and refreshes every 15 seconds. Failed frame computations
+   * skip an update without closing the stream. Returns UNIMPLEMENTED without an arrivals
+   * product. Client cancellation removes the subscription.
+   *
    * @generated from rpc tfm.v1.TfmService.StreamTrainArrivals
    */
   streamTrainArrivals: {
@@ -145,6 +205,11 @@ export const TfmService: GenService<{
     output: typeof GetTrainArrivalsResponseSchema;
   },
   /**
+   * Subscribes to scheduled departures for one stop, using the unary request's date and
+   * row options. Attempts an initial snapshot and refreshes every 15 seconds; failed frames
+   * are skipped. Returns UNIMPLEMENTED when timetables are disabled or INVALID_ARGUMENT
+   * for a blank ATCO code. Client cancellation removes the subscription.
+   *
    * @generated from rpc tfm.v1.TfmService.StreamBusDepartures
    */
   streamBusDepartures: {
@@ -153,7 +218,10 @@ export const TfmService: GenService<{
     output: typeof GetBusDeparturesResponseSchema;
   },
   /**
-   * Live platform-occupancy board for a station (Darwin): platforms, the train at each, or empty.
+   * Returns the persisted platform inventory and Darwin-derived occupants for a CRS station.
+   * Platforms can be empty, and occupancy depends on available schedule and movement data.
+   * Does not yet reconcile occupants with live arrival/departure board rows. Unexpected
+   * assembly failures return INTERNAL.
    *
    * @generated from rpc tfm.v1.TfmService.GetStationPlatforms
    */
@@ -163,7 +231,9 @@ export const TfmService: GenService<{
     output: typeof GetStationPlatformsResponseSchema;
   },
   /**
-   * Calling points of one train journey, resolved from a board row (Darwin timetable).
+   * Resolves a train-board row to stored Darwin calling points using station, scheduled
+   * time, direction, and a destination hint. Returns found=false when no station or schedule
+   * can be matched; that does not mean the train is cancelled. Unexpected failures return INTERNAL.
    *
    * @generated from rpc tfm.v1.TfmService.GetTrainService
    */
@@ -173,7 +243,8 @@ export const TfmService: GenService<{
     output: typeof GetTrainServiceResponseSchema;
   },
   /**
-   * When the bus route/lane/trunk geometry was last rebuilt — for a "map data updated N ago" hint.
+   * Returns when derived bus-route geometry was last built, in epoch milliseconds.
+   * A zero timestamp means it has never been built. Storage failures return UNAVAILABLE.
    *
    * @generated from rpc tfm.v1.TfmService.GetMapDataStatus
    */
@@ -183,8 +254,9 @@ export const TfmService: GenService<{
     output: typeof GetMapDataStatusResponseSchema;
   },
   /**
-   * The honest data-sources inventory: every feed, its status and freshness. Reflects state already
-   * held in-process — makes no new external calls.
+   * Returns feed availability, freshness, and dataset counts without polling upstream
+   * transport feeds. Individual source inspection failures are represented in the inventory;
+   * an unexpected failure assembling the response returns INTERNAL.
    *
    * @generated from rpc tfm.v1.TfmService.GetDataSources
    */

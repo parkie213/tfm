@@ -84,6 +84,13 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     this.dataSourceRegistry = dataSourceRegistry;
   }
 
+  /**
+   * Returns a combined arrival/departure board, joining rows by upstream service ID. Blank CRS
+   * defaults to Melton Mowbray (MMO). Departure details take precedence; arrivals fill missing
+   * details. Unconfigured or failed arrivals leave a departures-only response with
+   * arrivals_available=false. Returns UNIMPLEMENTED without departure credentials, and UNAVAILABLE
+   * when the required departure board cannot be loaded.
+   */
   @Override
   public void getStationBoard(
       GetStationBoardRequest request, StreamObserver<GetStationBoardResponse> observer) {
@@ -102,6 +109,13 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     }
   }
 
+  /**
+   * Subscribes to complete combined station-board snapshots using the same merge rules as
+   * GetStationBoard. Attempts an initial snapshot, then refreshes every 15 seconds through the
+   * upstream board caches. Failed frame computations skip that update without closing the stream;
+   * clients may retain their last snapshot. Missing departure credentials return UNIMPLEMENTED.
+   * Client cancellation removes the subscription.
+   */
   @Override
   public void streamStationBoard(
       GetStationBoardRequest request, StreamObserver<GetStationBoardResponse> observer) {
@@ -117,6 +131,10 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     return false;
   }
 
+  /**
+   * Returns the cached Darwin departure board; blank CRS defaults to MMO. A non-positive row count
+   * uses the server default. Upstream failures return UNAVAILABLE.
+   */
   @Override
   public void getTrainDepartures(
       GetTrainDeparturesRequest request,
@@ -135,6 +153,10 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     }
   }
 
+  /**
+   * Returns the cached Darwin arrivals board; blank CRS defaults to MMO. Returns UNIMPLEMENTED when
+   * the optional arrivals product is not configured, or UNAVAILABLE if the board cannot be loaded.
+   */
   @Override
   public void getTrainArrivals(
       GetTrainArrivalsRequest request, StreamObserver<GetTrainArrivalsResponse> responseObserver) {
@@ -159,6 +181,12 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     }
   }
 
+  /**
+   * Returns scheduled bus departures for a required NaPTAN ATCO stop code. An empty date requests
+   * upcoming departures; a supplied date selects that day's timetable. Returns UNIMPLEMENTED when
+   * timetables are disabled, INVALID_ARGUMENT for a blank stop code, or UNAVAILABLE on a timetable
+   * query failure.
+   */
   @Override
   public void getBusDepartures(
       GetBusDeparturesRequest request, StreamObserver<GetBusDeparturesResponse> responseObserver) {
@@ -193,6 +221,12 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
 
   // ---- Streamed departure boards (server-maintained; replace the polls) ----
 
+  /**
+   * Subscribes to cached departure-board snapshots; blank CRS defaults to MMO. Attempts an initial
+   * snapshot and refreshes every 15 seconds. Failed frame computations skip an update without
+   * closing the stream. Returns UNIMPLEMENTED without departure credentials. Client cancellation
+   * removes the subscription.
+   */
   @Override
   public void streamTrainDepartures(
       GetTrainDeparturesRequest request,
@@ -207,6 +241,12 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     boardStreams.subscribeTrainDepartures(responseObserver, request);
   }
 
+  /**
+   * Subscribes to cached arrivals-board snapshots; blank CRS defaults to MMO. Attempts an initial
+   * snapshot and refreshes every 15 seconds. Failed frame computations skip an update without
+   * closing the stream. Returns UNIMPLEMENTED without an arrivals product. Client cancellation
+   * removes the subscription.
+   */
   @Override
   public void streamTrainArrivals(
       GetTrainArrivalsRequest request, StreamObserver<GetTrainArrivalsResponse> responseObserver) {
@@ -220,6 +260,12 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     boardStreams.subscribeTrainArrivals(responseObserver, request);
   }
 
+  /**
+   * Subscribes to scheduled departures for one stop, using the unary request's date and row
+   * options. Attempts an initial snapshot and refreshes every 15 seconds; failed frames are
+   * skipped. Returns UNIMPLEMENTED when timetables are disabled or INVALID_ARGUMENT for a blank
+   * ATCO code. Client cancellation removes the subscription.
+   */
   @Override
   public void streamBusDepartures(
       GetBusDeparturesRequest request, StreamObserver<GetBusDeparturesResponse> responseObserver) {
@@ -238,6 +284,11 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     boardStreams.subscribeBusDepartures(responseObserver, request);
   }
 
+  /**
+   * Returns the ordered calling points and available geometry of a GTFS trip. Returns UNIMPLEMENTED
+   * when timetables are disabled, INVALID_ARGUMENT for a blank trip ID, or UNAVAILABLE on a
+   * timetable query failure.
+   */
   @Override
   public void getServiceStops(
       GetServiceStopsRequest request, StreamObserver<GetServiceStopsResponse> responseObserver) {
@@ -267,6 +318,11 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     }
   }
 
+  /**
+   * Returns calling points and geometry for a representative trip of a named bus route. Long name
+   * and operator disambiguate reused route numbers. Returns UNIMPLEMENTED when timetables are
+   * disabled, INVALID_ARGUMENT for a blank short name, or UNAVAILABLE on failure.
+   */
   @Override
   public void getRouteStops(
       GetRouteStopsRequest request, StreamObserver<GetServiceStopsResponse> responseObserver) {
@@ -301,6 +357,11 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     }
   }
 
+  /**
+   * Returns the current bus snapshot without waiting for an upstream request. A valid bounding box
+   * filters vehicles; a degenerate box returns all vehicles. The snapshot may be empty or stale.
+   * Returns UNIMPLEMENTED when live buses are not configured.
+   */
   @Override
   public void getBusVehicles(
       GetBusVehiclesRequest request, StreamObserver<GetBusVehiclesResponse> responseObserver) {
@@ -319,6 +380,11 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     responseObserver.onCompleted();
   }
 
+  /**
+   * Subscribes to current bus snapshots and subsequent poll updates. The bounding box filters
+   * vehicles; a requested tracked trip is included even outside it when available. Returns
+   * UNIMPLEMENTED when live buses are not configured. Client cancellation removes the subscription.
+   */
   @Override
   public void streamBusVehicles(
       StreamBusVehiclesRequest request, StreamObserver<GetBusVehiclesResponse> responseObserver) {
@@ -335,6 +401,11 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     busVehicles.subscribe(responseObserver, request);
   }
 
+  /**
+   * Returns catalogue stops inside the bounding box, with truncated=true if capped. Returns
+   * INVALID_ARGUMENT for reversed, empty, or out-of-range bounds, and UNAVAILABLE on a catalogue
+   * query failure.
+   */
   @Override
   public void getStopsInViewport(
       GetStopsInViewportRequest request,
@@ -375,6 +446,11 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     }
   }
 
+  /**
+   * Returns shared bus-route geometry intersecting the bounding box, falling back to published GTFS
+   * shapes when no shared trunks are found. Results may be capped. Returns INVALID_ARGUMENT for
+   * invalid bounds or UNAVAILABLE on a spatial query failure.
+   */
   @Override
   public void getRouteShapesInViewport(
       GetRouteShapesInViewportRequest request,
@@ -421,6 +497,11 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     }
   }
 
+  /**
+   * Returns stops and localities interleaved in relevance order, subject to the requested limit and
+   * server cap. Queries shorter than two characters after trimming return an empty response. Query
+   * failures return UNAVAILABLE.
+   */
   @Override
   public void searchStops(
       SearchStopsRequest request, StreamObserver<SearchStopsResponse> responseObserver) {
@@ -449,6 +530,11 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     }
   }
 
+  /**
+   * Resolves a train-board row to stored Darwin calling points using station, scheduled time,
+   * direction, and a destination hint. Returns found=false when no station or schedule can be
+   * matched; that does not mean the train is cancelled. Unexpected failures return INTERNAL.
+   */
   @Override
   public void getTrainService(
       GetTrainServiceRequest request, StreamObserver<GetTrainServiceResponse> responseObserver) {
@@ -472,6 +558,12 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
     }
   }
 
+  /**
+   * Returns the persisted platform inventory and Darwin-derived occupants for a CRS station.
+   * Platforms can be empty, and occupancy depends on available schedule and movement data. Does not
+   * yet reconcile occupants with live arrival/departure board rows. Unexpected assembly failures
+   * return INTERNAL.
+   */
   @Override
   public void getStationPlatforms(
       GetStationPlatformsRequest request,
@@ -490,9 +582,9 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
   }
 
   /**
-   * Returns a point-in-time inventory of every external feed the application uses, assembled from
-   * in-process state only — no outbound calls. Always succeeds: individual source failures degrade
-   * to status ERROR / item_count -1 rather than failing the whole RPC.
+   * Returns feed availability, freshness, and dataset counts without polling upstream transport
+   * feeds. Individual source inspection failures are represented in the inventory; an unexpected
+   * failure assembling the response returns INTERNAL.
    */
   @Override
   public void getDataSources(
@@ -513,8 +605,8 @@ public final class TfmServiceImpl extends TfmServiceGrpc.TfmServiceImplBase {
   }
 
   /**
-   * When the derived bus route/trunk geometry was last (re)built — powers the client's "map data
-   * updated N ago" hint. Returns 0 when it has never been built (fresh DB / nothing loaded yet).
+   * Returns when derived bus-route geometry was last built, in epoch milliseconds. A zero timestamp
+   * means it has never been built. Storage failures return UNAVAILABLE.
    */
   @Override
   public void getMapDataStatus(
