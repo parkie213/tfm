@@ -18,6 +18,10 @@ import uk.org.tfm.model.timetable.TimetableSource;
  * Replaces the GTFS tables with a supplied timetable in one transaction, streaming each table
  * straight from its source into PostgreSQL COPY. Memory use is bounded by one COPY buffer, not by
  * the feed: the East Midlands feed alone is ~21M shape points and ~4.6M stop times.
+ *
+ * <p>A future improvement is to load into staging tables, then publish the completed timetable in a
+ * short transaction. The current TRUNCATE holds an exclusive lock until the import commits,
+ * blocking timetable reads for the duration of the load.
  */
 final class PostgresTimetableImporter {
   private static final Logger log = LoggerFactory.getLogger(PostgresTimetableImporter.class);
