@@ -12,8 +12,8 @@ import uk.org.tfm.model.rail.*;
 import uk.org.tfm.model.storage.StationPlatformStore;
 
 class DarwinFeedCoordinatorTest {
-  private static final ScheduleRecord RECORD =
-      new ScheduleRecord(
+  private static final TrainScheduleDetails RECORD =
+      new TrainScheduleDetails(
           new TrainSchedule("rid", "uid", "1F77", "2026-10-28", "EM", "A", "B", "10:00", "11:00"),
           List.of(new TrainCallingPoint("rid", 1, "A", "", "10:00")));
 
@@ -32,9 +32,9 @@ class DarwinFeedCoordinatorTest {
   }
 
   private static class Store extends StubTrainScheduleStore {
-    List<ScheduleRecord> saved = List.of();
+    List<TrainScheduleDetails> saved = List.of();
 
-    public void upsertLiveBatch(List<ScheduleRecord> records) {
+    public void upsertLiveBatch(List<TrainScheduleDetails> records) {
       saved = List.copyOf(records);
     }
   }
@@ -64,7 +64,7 @@ class DarwinFeedCoordinatorTest {
       coordinator.start();
       assertEquals(1, feed.starts);
       assertTrue(coordinator.isRunning());
-      feed.sink.onScheduleRecord(RECORD);
+      feed.sink.onScheduleDetails(RECORD);
       assertTrue(coordinator.lastMessageAt().isPresent());
     } finally {
       coordinator.stop();
@@ -83,7 +83,7 @@ class DarwinFeedCoordinatorTest {
             true, feed, new DarwinScheduleFeedService(new Store()), platforms);
     try {
       coordinator.start();
-      feed.sink.onScheduleRecord(RECORD);
+      feed.sink.onScheduleDetails(RECORD);
       feed.sink.onPlatformUpdate(
           new PlatformUpdate("rid", "A", "1", true, false, "P", Instant.now()));
       var occupant = platforms.stationBoard("A").getFirst().trains().getFirst();

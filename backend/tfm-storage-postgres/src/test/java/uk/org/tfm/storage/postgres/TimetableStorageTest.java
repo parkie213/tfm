@@ -127,7 +127,7 @@ class TimetableStorageTest {
             return RowReader.empty();
           }
 
-          public RowReader<CalendarException> calendarDates() {
+          public RowReader<CalendarDateOverride> calendarDates() {
             return RowReader.empty();
           }
 

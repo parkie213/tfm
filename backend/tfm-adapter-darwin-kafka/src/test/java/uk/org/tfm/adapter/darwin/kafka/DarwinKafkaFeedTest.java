@@ -14,10 +14,10 @@ import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.Test;
 import uk.org.tfm.model.rail.MovementSnapshot;
 import uk.org.tfm.model.rail.PlatformUpdate;
-import uk.org.tfm.model.rail.ScheduleRecord;
 import uk.org.tfm.model.rail.TrainEventSink;
+import uk.org.tfm.model.rail.TrainScheduleDetails;
 
-class DarwinKafkaPlatformFeedTest {
+class DarwinKafkaFeedTest {
   private static DarwinKafkaSettings settings(boolean enabled) {
     return new DarwinKafkaSettings(
         "broker:9092", "darwin", "test-key", "test-secret", "issued-group", enabled);
@@ -33,7 +33,7 @@ class DarwinKafkaPlatformFeedTest {
 
   @Test
   void propertiesPreserveIssuedGroupAuthenticationAndLiveOffsetPolicy() {
-    var properties = DarwinKafkaPlatformFeed.consumerProps(settings(true));
+    var properties = DarwinKafkaFeed.consumerProps(settings(true));
     assertEquals("issued-group", properties.getProperty("group.id"));
     assertEquals("SASL_SSL", properties.getProperty("security.protocol"));
     assertEquals("PLAIN", properties.getProperty("sasl.mechanism"));
@@ -49,7 +49,7 @@ class DarwinKafkaPlatformFeedTest {
   void disabledFeedDoesNotCreateConsumer() {
     var creations = new AtomicInteger();
     var feed =
-        new DarwinKafkaPlatformFeed(
+        new DarwinKafkaFeed(
             settings(false),
             "NTNG"::equals,
             () -> {
@@ -67,7 +67,7 @@ class DarwinKafkaPlatformFeedTest {
   void rejectedPlatformEventDoesNotPreventScheduleAndMovementDelivery() {
     var schedules = new AtomicInteger();
     var movements = new AtomicInteger();
-    var feed = new DarwinKafkaPlatformFeed(settings(true), "NTNG"::equals);
+    var feed = new DarwinKafkaFeed(settings(true), "NTNG"::equals);
     feed.dispatch(
         MESSAGE,
         new Sink() {
@@ -75,7 +75,7 @@ class DarwinKafkaPlatformFeedTest {
             throw new IllegalArgumentException("rejected");
           }
 
-          public void onScheduleRecord(ScheduleRecord record) {
+          public void onScheduleDetails(TrainScheduleDetails record) {
             schedules.incrementAndGet();
           }
 
@@ -101,7 +101,7 @@ class DarwinKafkaPlatformFeedTest {
     var creations = new AtomicInteger();
     var delivered = new CountDownLatch(3);
     var feed =
-        new DarwinKafkaPlatformFeed(
+        new DarwinKafkaFeed(
             settings(true),
             "NTNG"::equals,
             () -> {
@@ -114,7 +114,7 @@ class DarwinKafkaPlatformFeedTest {
             delivered.countDown();
           }
 
-          public void onScheduleRecord(ScheduleRecord record) {
+          public void onScheduleDetails(TrainScheduleDetails record) {
             delivered.countDown();
           }
 
@@ -138,7 +138,7 @@ class DarwinKafkaPlatformFeedTest {
   private static class Sink implements TrainEventSink {
     public void onPlatformUpdate(PlatformUpdate update) {}
 
-    public void onScheduleRecord(ScheduleRecord record) {}
+    public void onScheduleDetails(TrainScheduleDetails record) {}
 
     public void onMovement(MovementSnapshot movement) {}
   }

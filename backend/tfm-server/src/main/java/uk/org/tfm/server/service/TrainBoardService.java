@@ -7,7 +7,7 @@ import uk.org.tfm.model.board.Board;
 import uk.org.tfm.model.board.BoardProvider;
 import uk.org.tfm.proto.v1.GetTrainArrivalsResponse;
 import uk.org.tfm.proto.v1.GetTrainDeparturesResponse;
-import uk.org.tfm.server.cache.DepartureCache;
+import uk.org.tfm.server.cache.ExpiringCache;
 
 /**
  * Caches provider-independent live boards and maps them to the frontend contract. Provider JSON
@@ -19,10 +19,10 @@ public final class TrainBoardService {
   private static final int DEFAULT_ROWS = 10;
 
   private final BoardProvider boards;
-  private final DepartureCache<String, GetTrainDeparturesResponse> depCache =
-      new DepartureCache<>(Duration.ofSeconds(30));
-  private final DepartureCache<String, GetTrainArrivalsResponse> arrCache =
-      new DepartureCache<>(Duration.ofSeconds(30));
+  private final ExpiringCache<String, GetTrainDeparturesResponse> depCache =
+      new ExpiringCache<>(Duration.ofSeconds(30));
+  private final ExpiringCache<String, GetTrainArrivalsResponse> arrCache =
+      new ExpiringCache<>(Duration.ofSeconds(30));
 
   @Inject
   public TrainBoardService(BoardProvider boards) {

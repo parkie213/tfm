@@ -13,7 +13,7 @@ public interface TrainEventSink {
   /**
    * A live schedule (rid → headcode → O/D + calling points) from a {@code schedule} (SC) message.
    */
-  void onScheduleRecord(ScheduleRecord record);
+  void onScheduleDetails(TrainScheduleDetails record);
 
   /**
    * A movement actual/estimate at one location from a {@code TS} message (drives "at platform

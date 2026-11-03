@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.org.tfm.model.rail.ScheduleRecord;
+import uk.org.tfm.model.rail.TrainScheduleDetails;
 import uk.org.tfm.model.storage.StorageException;
 import uk.org.tfm.model.storage.TrainScheduleStore;
 
@@ -40,7 +40,7 @@ public final class DarwinScheduleFeedService {
   private final TrainScheduleStore dao;
   // rid -> latest record awaiting persistence. Written on the consumer thread, drained on the
   // sweep.
-  private final ConcurrentHashMap<String, ScheduleRecord> pending = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, TrainScheduleDetails> pending = new ConcurrentHashMap<>();
   private int flushCount;
 
   @Inject
@@ -49,7 +49,7 @@ public final class DarwinScheduleFeedService {
   }
 
   /** Consumer thread: buffer the latest SC for this rid; the sweep persists it. */
-  public void onRecord(ScheduleRecord record) {
+  public void onRecord(TrainScheduleDetails record) {
     pending.put(record.header().rid(), record);
   }
 
@@ -58,9 +58,9 @@ public final class DarwinScheduleFeedService {
     if (!pending.isEmpty()) {
       // Snapshot keys first, then remove exactly those — a concurrent onRecord only re-adds (safe).
       Set<String> keys = new HashSet<>(pending.keySet());
-      List<ScheduleRecord> batch = new ArrayList<>(keys.size());
+      List<TrainScheduleDetails> batch = new ArrayList<>(keys.size());
       for (String rid : keys) {
-        ScheduleRecord r = pending.get(rid);
+        TrainScheduleDetails r = pending.get(rid);
         if (r != null) {
           batch.add(r);
         }
@@ -70,7 +70,7 @@ public final class DarwinScheduleFeedService {
         dao.upsertLiveBatch(batch);
         log.debug("Darwin SC flush: upserted {} live schedules.", batch.size());
       } catch (StorageException e) {
-        for (ScheduleRecord r : batch) {
+        for (TrainScheduleDetails r : batch) {
           pending.putIfAbsent(r.header().rid(), r); // re-queue; don't clobber a fresher arrival
         }
         log.warn(

@@ -3,7 +3,7 @@ package uk.org.tfm.adapter.darwin.kafka;
 import java.util.List;
 import uk.org.tfm.model.rail.MovementSnapshot;
 import uk.org.tfm.model.rail.PlatformUpdate;
-import uk.org.tfm.model.rail.ScheduleRecord;
+import uk.org.tfm.model.rail.TrainScheduleDetails;
 
 /**
  * The parsed contents of one Darwin push-port Kafka message: the platform updates (from {@code
@@ -13,7 +13,7 @@ import uk.org.tfm.model.rail.ScheduleRecord;
  */
 public record PushportMessage(
     List<PlatformUpdate> platformUpdates,
-    List<ScheduleRecord> schedules,
+    List<TrainScheduleDetails> schedules,
     List<MovementSnapshot> movements) {
 
   public static final PushportMessage EMPTY = new PushportMessage(List.of(), List.of(), List.of());

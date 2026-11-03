@@ -5,7 +5,7 @@ import dagger.Provides;
 import javax.inject.Singleton;
 import uk.org.tfm.adapter.darwin.DarwinClient;
 import uk.org.tfm.model.board.BoardProvider;
-import uk.org.tfm.model.feed.TrainBoardFeeds;
+import uk.org.tfm.model.feed.TrainBoardFeedHealth;
 import uk.org.tfm.server.config.Config;
 
 @Module
@@ -31,7 +31,7 @@ public final class DarwinModule {
   /** Surfaces the DarwinClient's per-product health views for the data-sources page. */
   @Provides
   @Singleton
-  static TrainBoardFeeds provideTrainBoardFeeds(DarwinClient client) {
-    return new TrainBoardFeeds(client.departuresHealth(), client.arrivalsHealth());
+  static TrainBoardFeedHealth provideTrainBoardFeedHealth(DarwinClient client) {
+    return new TrainBoardFeedHealth(client.departuresHealth(), client.arrivalsHealth());
   }
 }

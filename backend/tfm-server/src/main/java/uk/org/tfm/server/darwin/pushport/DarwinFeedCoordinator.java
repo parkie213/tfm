@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.org.tfm.model.rail.MovementSnapshot;
 import uk.org.tfm.model.rail.PlatformUpdate;
-import uk.org.tfm.model.rail.ScheduleRecord;
 import uk.org.tfm.model.rail.TrainEventFeed;
 import uk.org.tfm.model.rail.TrainEventSink;
+import uk.org.tfm.model.rail.TrainScheduleDetails;
 import uk.org.tfm.server.config.Config;
 
 /** Owns the train feed lifecycle and dispatches schedules independently of platform maintenance. */
@@ -68,10 +68,10 @@ public final class DarwinFeedCoordinator {
           }
 
           @Override
-          public void onScheduleRecord(ScheduleRecord record) {
+          public void onScheduleDetails(TrainScheduleDetails record) {
             lastMessageAt = Instant.now();
             schedules.onRecord(record);
-            platforms.onScheduleRecord(record);
+            platforms.onScheduleDetails(record);
           }
 
           @Override

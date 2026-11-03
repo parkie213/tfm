@@ -11,9 +11,9 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.org.tfm.model.rail.ScheduleRecord;
 import uk.org.tfm.model.rail.TrainCallingPoint;
 import uk.org.tfm.model.rail.TrainSchedule;
+import uk.org.tfm.model.rail.TrainScheduleDetails;
 import uk.org.tfm.model.storage.StorageException;
 import uk.org.tfm.model.storage.TrainScheduleStore;
 
@@ -196,7 +196,7 @@ public final class PostgresTrainScheduleStore implements TrainScheduleStore {
    * leaves no stale rows. Idempotent; call from the schedule-feed sweep thread only. Throws so the
    * caller can re-queue and retry on the next sweep.
    */
-  private void writeLiveBatch(List<ScheduleRecord> records) throws SQLException {
+  private void writeLiveBatch(List<TrainScheduleDetails> records) throws SQLException {
     if (records.isEmpty()) {
       return;
     }
@@ -210,7 +210,7 @@ public final class PostgresTrainScheduleStore implements TrainScheduleStore {
         del.executeUpdate();
         int pending = 0;
         int stopPending = 0;
-        for (ScheduleRecord r : records) {
+        for (TrainScheduleDetails r : records) {
           TrainSchedule h = r.header();
           ps.setString(1, h.rid());
           ps.setString(2, h.uid());
@@ -276,7 +276,7 @@ public final class PostgresTrainScheduleStore implements TrainScheduleStore {
   }
 
   @Override
-  public void upsertLiveBatch(List<ScheduleRecord> records) throws StorageException {
+  public void upsertLiveBatch(List<TrainScheduleDetails> records) throws StorageException {
     try {
       writeLiveBatch(records);
     } catch (SQLException e) {

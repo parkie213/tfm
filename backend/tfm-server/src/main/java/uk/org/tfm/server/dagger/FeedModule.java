@@ -3,7 +3,7 @@ package uk.org.tfm.server.dagger;
 import dagger.Module;
 import dagger.Provides;
 import javax.inject.Singleton;
-import uk.org.tfm.adapter.darwin.kafka.DarwinKafkaPlatformFeed;
+import uk.org.tfm.adapter.darwin.kafka.DarwinKafkaFeed;
 import uk.org.tfm.adapter.darwin.kafka.DarwinKafkaSettings;
 import uk.org.tfm.model.rail.TrainEventFeed;
 import uk.org.tfm.server.config.Config;
@@ -23,6 +23,6 @@ public final class FeedModule {
             config.darwinKafkaSecret(),
             config.darwinKafkaGroup(),
             config.platformFeedEnabled());
-    return new DarwinKafkaPlatformFeed(settings, scope::inScope);
+    return new DarwinKafkaFeed(settings, scope::inScope);
   }
 }

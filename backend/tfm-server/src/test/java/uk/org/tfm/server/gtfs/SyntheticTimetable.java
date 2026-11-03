@@ -74,7 +74,7 @@ final class SyntheticTimetable implements TimetableSource {
   }
 
   @Override
-  public RowReader<CalendarException> calendarDates() {
+  public RowReader<CalendarDateOverride> calendarDates() {
     return RowReader.empty();
   }
 

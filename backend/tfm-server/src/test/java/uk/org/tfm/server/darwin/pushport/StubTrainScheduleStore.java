@@ -25,7 +25,7 @@ class StubTrainScheduleStore implements TrainScheduleStore {
     return List.of();
   }
 
-  public void upsertLiveBatch(List<ScheduleRecord> records) throws StorageException {}
+  public void upsertLiveBatch(List<TrainScheduleDetails> records) throws StorageException {}
 
   public long evictOldSchedules(LocalDate cutoff) {
     return 0;

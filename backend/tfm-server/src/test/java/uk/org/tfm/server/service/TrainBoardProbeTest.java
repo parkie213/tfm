@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import uk.org.tfm.model.board.Board;
 import uk.org.tfm.model.board.BoardProvider;
 import uk.org.tfm.model.feed.FeedHealth;
-import uk.org.tfm.model.feed.TrainBoardFeeds;
+import uk.org.tfm.model.feed.TrainBoardFeedHealth;
 
 class TrainBoardProbeTest {
 
@@ -53,7 +53,7 @@ class TrainBoardProbeTest {
 
   private static TrainBoardProbe probe(Boards boards, boolean dep, boolean arr) {
     return new TrainBoardProbe(
-        new TrainBoardService(boards), new TrainBoardFeeds(configured(dep), configured(arr)));
+        new TrainBoardService(boards), new TrainBoardFeedHealth(configured(dep), configured(arr)));
   }
 
   @Test
@@ -87,7 +87,8 @@ class TrainBoardProbeTest {
   void probeWarmsTheBoardCacheTheUiReads() {
     var boards = new Boards();
     var service = new TrainBoardService(boards);
-    new TrainBoardProbe(service, new TrainBoardFeeds(configured(true), configured(false))).probe();
+    new TrainBoardProbe(service, new TrainBoardFeedHealth(configured(true), configured(false)))
+        .probe();
     service.getDepartures("MMO", 0); // the UI's request: served from cache, no second fetch
     assertEquals(List.of("dep:MMO:10"), boards.calls);
   }

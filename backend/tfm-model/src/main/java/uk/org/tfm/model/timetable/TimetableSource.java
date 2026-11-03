@@ -21,7 +21,7 @@ public interface TimetableSource {
 
   RowReader<ServiceCalendar> calendar() throws FeedException;
 
-  RowReader<CalendarException> calendarDates() throws FeedException;
+  RowReader<CalendarDateOverride> calendarDates() throws FeedException;
 
   RowReader<ShapePoint> shapes() throws FeedException;
 }

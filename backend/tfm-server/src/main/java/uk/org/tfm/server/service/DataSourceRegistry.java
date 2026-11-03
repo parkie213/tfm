@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.org.tfm.model.feed.FeedHealth;
-import uk.org.tfm.model.feed.TrainBoardFeeds;
+import uk.org.tfm.model.feed.TrainBoardFeedHealth;
 import uk.org.tfm.model.storage.LocalityCountSource;
 import uk.org.tfm.model.storage.StopCountSource;
 import uk.org.tfm.model.storage.StorageException;
@@ -38,7 +38,7 @@ public final class DataSourceRegistry {
   static final Duration PUSHPORT_STALE_AFTER = Duration.ofMinutes(5);
 
   private final Config config;
-  private final BusVehicleInfo busVehicleInfo;
+  private final BusVehicleFeedStatus busVehicleFeedStatus;
   private final PlatformFeedInfo platformFeedInfo;
   private final GtfsFeedInfo gtfsFeedInfo;
   private final LoadStateInfo loadStateInfo;
@@ -48,7 +48,7 @@ public final class DataSourceRegistry {
   private final NaptanLoaderInfo naptanLoaderInfo;
   private final NptgLoaderInfo nptgLoaderInfo;
   private final OsrmInfo osrmInfo;
-  private final TrainBoardFeeds trainBoards;
+  private final TrainBoardFeedHealth trainBoards;
 
   // ---- Tiny TTL-cached count holders ----
 
@@ -68,7 +68,7 @@ public final class DataSourceRegistry {
   @Inject
   public DataSourceRegistry(
       Config config,
-      BusVehicleInfo busVehicleInfo,
+      BusVehicleFeedStatus busVehicleFeedStatus,
       PlatformFeedInfo platformFeedInfo,
       GtfsFeedInfo gtfsFeedInfo,
       LoadStateInfo loadStateInfo,
@@ -78,9 +78,9 @@ public final class DataSourceRegistry {
       NaptanLoaderInfo naptanLoaderInfo,
       NptgLoaderInfo nptgLoaderInfo,
       OsrmInfo osrmInfo,
-      TrainBoardFeeds trainBoards) {
+      TrainBoardFeedHealth trainBoards) {
     this.config = config;
-    this.busVehicleInfo = busVehicleInfo;
+    this.busVehicleFeedStatus = busVehicleFeedStatus;
     this.platformFeedInfo = platformFeedInfo;
     this.gtfsFeedInfo = gtfsFeedInfo;
     this.loadStateInfo = loadStateInfo;
@@ -243,11 +243,11 @@ public final class DataSourceRegistry {
   // ---- Buses ----
 
   private DataSource buildBodsSiriVm() {
-    boolean enabled = busVehicleInfo.isEnabled();
+    boolean enabled = busVehicleFeedStatus.isEnabled();
     DataSourceStatus status;
     if (!enabled) {
       status = DataSourceStatus.DATA_SOURCE_STATUS_DISABLED;
-    } else if (busVehicleInfo.isStale()) {
+    } else if (busVehicleFeedStatus.isStale()) {
       status = DataSourceStatus.DATA_SOURCE_STATUS_ERROR;
     } else {
       status = DataSourceStatus.DATA_SOURCE_STATUS_LIVE;
@@ -256,8 +256,8 @@ public final class DataSourceRegistry {
     String lastUpdated = "";
     long itemCount = -1;
     try {
-      lastUpdated = busVehicleInfo.lastFetchedAt().map(Instant::toString).orElse("");
-      itemCount = busVehicleInfo.vehicleCount();
+      lastUpdated = busVehicleFeedStatus.lastFetchedAt().map(Instant::toString).orElse("");
+      itemCount = busVehicleFeedStatus.vehicleCount();
     } catch (Exception e) {
       log.debug("DataSourceRegistry: BODS state read failed", e);
     }

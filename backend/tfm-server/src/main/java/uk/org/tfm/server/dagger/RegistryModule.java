@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 import uk.org.tfm.server.bods.BusVehicleService;
 import uk.org.tfm.server.db.OsrmRouter;
 import uk.org.tfm.server.gtfs.TimetableRefreshService;
-import uk.org.tfm.server.service.BusVehicleInfo;
+import uk.org.tfm.server.service.BusVehicleFeedStatus;
 import uk.org.tfm.server.service.DarwinPlatformFeedInfo;
 import uk.org.tfm.server.service.GtfsFeedInfo;
 import uk.org.tfm.server.service.GtfsLoadStateInfo;
@@ -27,7 +27,7 @@ public abstract class RegistryModule {
 
   @Binds
   @Singleton
-  abstract BusVehicleInfo bindBusVehicleInfo(BusVehicleService impl);
+  abstract BusVehicleFeedStatus bindBusVehicleFeedStatus(BusVehicleService impl);
 
   @Binds
   @Singleton

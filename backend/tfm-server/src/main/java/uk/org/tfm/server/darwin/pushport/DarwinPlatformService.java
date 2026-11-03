@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.org.tfm.model.rail.MovementSnapshot;
 import uk.org.tfm.model.rail.PlatformUpdate;
-import uk.org.tfm.model.rail.ScheduleRecord;
+import uk.org.tfm.model.rail.TrainScheduleDetails;
 import uk.org.tfm.model.storage.StationPlatformStore;
 import uk.org.tfm.model.storage.StorageException;
 import uk.org.tfm.model.storage.TrainScheduleStore;
@@ -146,7 +146,7 @@ public final class DarwinPlatformService {
   }
 
   /** Make a new headcode available to platform/movement correlation before the storage flush. */
-  public void onScheduleRecord(ScheduleRecord record) {
+  public void onScheduleDetails(TrainScheduleDetails record) {
     String headcode = record.header().trainId();
     if (headcode != null && !headcode.isBlank()) {
       ridToHeadcode.put(record.header().rid(), headcode);

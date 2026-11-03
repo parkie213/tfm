@@ -9,14 +9,14 @@ import java.util.function.Function;
  * Tiny time-bounded cache. Keeps upstream calls (e.g. Darwin) infrequent while the frontend polls
  * every ~25s. A brief stampede on expiry is acceptable at this traffic level.
  */
-public final class DepartureCache<K, V> {
+public final class ExpiringCache<K, V> {
 
   private record Entry<V>(V value, Instant expiresAt) {}
 
   private final ConcurrentHashMap<K, Entry<V>> entries = new ConcurrentHashMap<>();
   private final Duration ttl;
 
-  public DepartureCache(Duration ttl) {
+  public ExpiringCache(Duration ttl) {
     this.ttl = ttl;
   }
 

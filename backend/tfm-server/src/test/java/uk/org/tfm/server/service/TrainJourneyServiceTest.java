@@ -42,7 +42,7 @@ class TrainJourneyServiceTest {
       return firstQueryEmpty && dates.size() == 1 ? List.of() : matches;
     }
 
-    public void upsertLiveBatch(List<ScheduleRecord> rows) {}
+    public void upsertLiveBatch(List<TrainScheduleDetails> rows) {}
 
     public long evictOldSchedules(LocalDate cutoff) {
       return 0;

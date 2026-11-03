@@ -39,7 +39,7 @@ public final class DarwinKafkaSampleCli {
     }
     int want = args.length > 0 ? Integer.parseInt(args[0].trim()) : 1;
 
-    Properties props = DarwinKafkaPlatformFeed.consumerProps(config);
+    Properties props = DarwinKafkaFeed.consumerProps(config);
     props.put("client.id", "tfm-darwin-sample");
     // A read-only probe: never advance the live feed's committed offsets.
     props.put("enable.auto.commit", "false");

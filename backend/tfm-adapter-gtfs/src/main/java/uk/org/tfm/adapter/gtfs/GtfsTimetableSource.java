@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.zip.ZipFile;
 import uk.org.tfm.model.feed.FeedException;
 import uk.org.tfm.model.timetable.Agency;
-import uk.org.tfm.model.timetable.CalendarException;
+import uk.org.tfm.model.timetable.CalendarDateOverride;
 import uk.org.tfm.model.timetable.Journey;
 import uk.org.tfm.model.timetable.Route;
 import uk.org.tfm.model.timetable.RowReader;
@@ -131,7 +131,7 @@ final class GtfsTimetableSource implements TimetableSource {
   }
 
   @Override
-  public RowReader<CalendarException> calendarDates() throws FeedException {
+  public RowReader<CalendarDateOverride> calendarDates() throws FeedException {
     return table(
         "calendar_dates.txt",
         false,
@@ -142,7 +142,7 @@ final class GtfsTimetableSource implements TimetableSource {
           if (exDate == null) return null;
           Integer exType = parseInt(f[c[2]]);
           if (exType == null) return null;
-          return new CalendarException(f[c[0]].trim(), exDate, exType);
+          return new CalendarDateOverride(f[c[0]].trim(), exDate, exType);
         });
   }
 

@@ -19,12 +19,12 @@ import uk.org.tfm.proto.v1.StreamBusVehiclesRequest;
 import uk.org.tfm.server.bods.BusVehicleProcessor.EnrichedVehicle;
 import uk.org.tfm.server.bods.BusVehicleProcessor.Snapshot;
 import uk.org.tfm.server.config.Config;
-import uk.org.tfm.server.service.BusVehicleInfo;
+import uk.org.tfm.server.service.BusVehicleFeedStatus;
 import uk.org.tfm.server.stream.BroadcastHub;
 
 /** Atomic bus snapshot reads, freshness/viewport filtering, and browser stream fan-out. */
 @Singleton
-public final class BusVehicleService implements BusVehicleInfo, AutoCloseable {
+public final class BusVehicleService implements BusVehicleFeedStatus, AutoCloseable {
   private final boolean enabled;
   private final long stalenessSeconds;
   private final AtomicReference<Snapshot> snapshot =

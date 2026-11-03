@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import uk.org.tfm.model.feed.FeedHealth;
-import uk.org.tfm.model.feed.TrainBoardFeeds;
+import uk.org.tfm.model.feed.TrainBoardFeedHealth;
 import uk.org.tfm.model.storage.LocalityCountSource;
 import uk.org.tfm.model.storage.StopCountSource;
 import uk.org.tfm.model.storage.TripCountSource;
@@ -25,8 +25,8 @@ class DataSourceRegistryTest {
 
   // ---- Default fakes for a no-key dev environment ----
 
-  static BusVehicleInfo busDisabled() {
-    return new BusVehicleInfo() {
+  static BusVehicleFeedStatus busDisabled() {
+    return new BusVehicleFeedStatus() {
       public boolean isEnabled() {
         return false;
       }
@@ -166,8 +166,8 @@ class DataSourceRegistryTest {
     };
   }
 
-  static TrainBoardFeeds noBoards() {
-    return new TrainBoardFeeds(ldbwsDisabled(), ldbwsDisabled());
+  static TrainBoardFeedHealth noBoards() {
+    return new TrainBoardFeedHealth(ldbwsDisabled(), ldbwsDisabled());
   }
 
   /** Configured board feed whose most recent call succeeded → LIVE. */
@@ -212,7 +212,7 @@ class DataSourceRegistryTest {
     };
   }
 
-  static DataSourceRegistry registryWith(PlatformFeedInfo platform, TrainBoardFeeds boards) {
+  static DataSourceRegistry registryWith(PlatformFeedInfo platform, TrainBoardFeedHealth boards) {
     return new DataSourceRegistry(
         Config.minimalForTesting(),
         busDisabled(),
@@ -259,7 +259,7 @@ class DataSourceRegistryTest {
         naptan,
         nptgNoTimestamp(),
         osrm,
-        new TrainBoardFeeds(ldbws, ldbwsDisabled()));
+        new TrainBoardFeedHealth(ldbws, ldbwsDisabled()));
   }
 
   static DataSource find(DataSourceRegistry r, String id) {
@@ -280,8 +280,8 @@ class DataSourceRegistryTest {
 
   @Test
   void bodsError_whenEnabledButStale() {
-    BusVehicleInfo staleEnabled =
-        new BusVehicleInfo() {
+    BusVehicleFeedStatus staleEnabled =
+        new BusVehicleFeedStatus() {
           public boolean isEnabled() {
             return true;
           }
@@ -321,8 +321,8 @@ class DataSourceRegistryTest {
   @Test
   void bodsLive_whenEnabledAndFresh() {
     Instant fetched = Instant.now().minusSeconds(5);
-    BusVehicleInfo live =
-        new BusVehicleInfo() {
+    BusVehicleFeedStatus live =
+        new BusVehicleFeedStatus() {
           public boolean isEnabled() {
             return true;
           }
@@ -499,7 +499,7 @@ class DataSourceRegistryTest {
   @Test
   void rdmArrivals_failureDoesNotMarkDeparturesBroken() {
     DataSourceRegistry r =
-        registryWith(platformDisabled(), new TrainBoardFeeds(ldbwsLive(), ldbwsErrored()));
+        registryWith(platformDisabled(), new TrainBoardFeedHealth(ldbwsLive(), ldbwsErrored()));
     assertEquals(DataSourceStatus.DATA_SOURCE_STATUS_LIVE, find(r, "rdm-ldbws").getStatus());
     assertEquals(DataSourceStatus.DATA_SOURCE_STATUS_ERROR, find(r, "rdm-arrivals").getStatus());
   }

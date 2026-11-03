@@ -12,8 +12,8 @@ import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
 import uk.org.tfm.model.rail.MovementSnapshot;
 import uk.org.tfm.model.rail.PlatformUpdate;
-import uk.org.tfm.model.rail.ScheduleRecord;
 import uk.org.tfm.model.rail.TrainCallingPoint;
+import uk.org.tfm.model.rail.TrainScheduleDetails;
 
 /**
  * Unit tests for {@link PushportParser}, built from the real on-the-wire RDM Darwin "…-JSON" shape
@@ -44,7 +44,7 @@ class PushportParserTest {
     return PushportParser.parse(envelope(inner), scope).platformUpdates();
   }
 
-  private static List<ScheduleRecord> schedules(String inner) {
+  private static List<TrainScheduleDetails> schedules(String inner) {
     return PushportParser.parse(envelope(inner), scope).schedules();
   }
 
@@ -216,10 +216,10 @@ class PushportParserTest {
           "IP":[{"tpl":"NTNG","pta":"22:10","ptd":"22:12"},{"tpl":"LESTER","pta":"21:30","ptd":"21:31"}],
           "PP":[{"tpl":"SOMEJN","wtp":"21:00"}],
           "DT":{"tpl":"SHEFF","pta":"22:41"}}}}""";
-    List<ScheduleRecord> recs = schedules(inner);
+    List<TrainScheduleDetails> recs = schedules(inner);
 
     assertEquals(1, recs.size(), "a schedule calling at an in-scope TIPLOC must be emitted");
-    ScheduleRecord r = recs.get(0);
+    TrainScheduleDetails r = recs.get(0);
     assertEquals("1F77", r.header().trainId(), "headcode = trainId");
     assertEquals("STPX", r.header().originTpl());
     assertEquals("20:32", r.header().originDep());

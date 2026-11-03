@@ -7,7 +7,7 @@ import java.util.Optional;
  * Narrow read-only view of the live bus-vehicle state needed by {@link DataSourceRegistry}.
  * Implemented by {@link uk.org.tfm.server.bods.BusVehicleService}.
  */
-public interface BusVehicleInfo {
+public interface BusVehicleFeedStatus {
   boolean isEnabled();
 
   Optional<Instant> lastFetchedAt();

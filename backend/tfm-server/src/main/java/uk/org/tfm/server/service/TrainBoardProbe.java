@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.org.tfm.model.feed.TrainBoardFeeds;
+import uk.org.tfm.model.feed.TrainBoardFeedHealth;
 
 /**
  * Fetches the home station's train boards once at startup. The board APIs are on-demand, so without
@@ -21,11 +21,11 @@ public final class TrainBoardProbe {
   static final String HOME_CRS = "MMO"; // Melton Mowbray
 
   private final TrainBoardService boards;
-  private final TrainBoardFeeds feeds;
+  private final TrainBoardFeedHealth feeds;
   private volatile Thread thread;
 
   @Inject
-  public TrainBoardProbe(TrainBoardService boards, TrainBoardFeeds feeds) {
+  public TrainBoardProbe(TrainBoardService boards, TrainBoardFeedHealth feeds) {
     this.boards = boards;
     this.feeds = feeds;
   }

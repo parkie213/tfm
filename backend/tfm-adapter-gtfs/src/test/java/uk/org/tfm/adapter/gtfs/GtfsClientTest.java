@@ -79,7 +79,7 @@ class GtfsClientTest {
       List<Journey> trips,
       List<StopTime> stopTimes,
       List<ServiceCalendar> calendar,
-      List<CalendarException> calendarDates,
+      List<CalendarDateOverride> calendarDates,
       List<ShapePoint> shapes) {}
 
   private static Tables drain(TimetableSource source) throws FeedException {

@@ -14,8 +14,8 @@ import uk.org.tfm.model.rail.*;
 import uk.org.tfm.model.storage.StorageException;
 
 class RailStoresTest {
-  private static final ScheduleRecord RECORD =
-      new ScheduleRecord(
+  private static final TrainScheduleDetails RECORD =
+      new TrainScheduleDetails(
           new TrainSchedule("rid", "uid", "1F77", "2026-10-28", "EM", "A", "B", "10:00", "11:00"),
           List.of(new TrainCallingPoint("rid", 1, "A", "", "10:00")));
 

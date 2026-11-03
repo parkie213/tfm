@@ -13,23 +13,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.org.tfm.model.rail.MovementSnapshot;
 import uk.org.tfm.model.rail.PlatformUpdate;
-import uk.org.tfm.model.rail.ScheduleRecord;
 import uk.org.tfm.model.rail.TrainEventFeed;
 import uk.org.tfm.model.rail.TrainEventSink;
+import uk.org.tfm.model.rail.TrainScheduleDetails;
 
 /**
  * {@link TrainEventFeed} backed by the Rail Data Marketplace (RDM) Darwin Real Time push port Kafka
- * feed. Consumes binary Pport messages from the configured topic and parses each into {@link
- * PlatformUpdate}s via {@link PushportParser}.
+ * feed. Consumes binary Pport messages from the configured topic and parses platform updates, train
+ * schedules, and movement updates via {@link PushportParser}.
  *
  * <p>Resilient by design: a dropped connection or deserialization error triggers a capped
  * exponential-backoff reconnect on a single daemon thread, and the loop never dies on an unchecked
  * exception. The Kafka consumer secret is never logged. The feed is a no-op (logs a warning) when
  * the feed is disabled or credentials are absent.
  */
-public final class DarwinKafkaPlatformFeed implements TrainEventFeed {
+public final class DarwinKafkaFeed implements TrainEventFeed {
 
-  private static final Logger log = LoggerFactory.getLogger(DarwinKafkaPlatformFeed.class);
+  private static final Logger log = LoggerFactory.getLogger(DarwinKafkaFeed.class);
   private static final long FIRST_BACKOFF_SECONDS = 5;
   private static final long MAX_BACKOFF_SECONDS = 120;
   private static final Duration POLL_TIMEOUT = Duration.ofSeconds(5);
@@ -43,12 +43,11 @@ public final class DarwinKafkaPlatformFeed implements TrainEventFeed {
   private volatile Consumer<String, byte[]> consumer;
   private final Supplier<Consumer<String, byte[]>> consumerFactory;
 
-  public DarwinKafkaPlatformFeed(
-      DarwinKafkaSettings config, java.util.function.Predicate<String> scope) {
+  public DarwinKafkaFeed(DarwinKafkaSettings config, java.util.function.Predicate<String> scope) {
     this(config, scope, () -> new KafkaConsumer<>(consumerProps(config)));
   }
 
-  DarwinKafkaPlatformFeed(
+  DarwinKafkaFeed(
       DarwinKafkaSettings config,
       java.util.function.Predicate<String> scope,
       Supplier<Consumer<String, byte[]>> consumerFactory) {
@@ -190,9 +189,9 @@ public final class DarwinKafkaPlatformFeed implements TrainEventFeed {
         log.warn("Platform sink rejected update for train {} at {}", update.rid(), update.tpl(), e);
       }
     }
-    for (ScheduleRecord record : msg.schedules()) {
+    for (TrainScheduleDetails record : msg.schedules()) {
       try {
-        sink.onScheduleRecord(record);
+        sink.onScheduleDetails(record);
       } catch (RuntimeException e) {
         log.warn("Schedule sink rejected record for rid {}", record.header().rid(), e);
       }

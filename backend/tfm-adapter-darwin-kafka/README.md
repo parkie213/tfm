@@ -4,7 +4,7 @@ The adapter for the Rail Data Marketplace Darwin Real Time push-port Kafka feed,
 the HTTP live-board adapter. Production dependencies are `tfm-model`, Kafka clients, Jackson, and
 SLF4J. It has no server, database, protobuf, or Dagger dependency.
 
-`DarwinKafkaPlatformFeed` implements the model's `TrainEventFeed`. It creates a consumer, subscribes
+`DarwinKafkaFeed` implements the model's `TrainEventFeed`. It creates a consumer, subscribes
 to the configured topic, polls on a daemon thread, and delivers serialized platform, movement, and
 schedule callbacks. It reconnects with capped exponential backoff. Stop requests wake and interrupt
 the consumer thread, which closes the consumer; starting an already-running feed is a no-op.

@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.org.tfm.model.rail.MovementSnapshot;
 import uk.org.tfm.model.rail.PlatformUpdate;
-import uk.org.tfm.model.rail.ScheduleRecord;
 import uk.org.tfm.model.rail.TrainCallingPoint;
 import uk.org.tfm.model.rail.TrainSchedule;
+import uk.org.tfm.model.rail.TrainScheduleDetails;
 
 /**
  * Parses a raw RDM Darwin Real Time (Push Port) Kafka message into a {@link PushportMessage}: the
@@ -55,7 +55,7 @@ public final class PushportParser {
         return PushportMessage.EMPTY;
       }
       List<PlatformUpdate> updates = new ArrayList<>();
-      List<ScheduleRecord> schedules = new ArrayList<>();
+      List<TrainScheduleDetails> schedules = new ArrayList<>();
       List<MovementSnapshot> movements = new ArrayList<>();
       Instant now = Instant.now(); // stamp every update in this message at the same instant
       // uR (real-time update) / sR (snapshot) both carry TS and schedule elements.
@@ -168,14 +168,14 @@ public final class PushportParser {
   // ---- schedule (SC) ----
 
   /**
-   * Builds a {@link ScheduleRecord} from a {@code schedule} element, emitted only when the journey
-   * calls at an in-scope TIPLOC. Origin = first location, destination = last; a public calling
-   * point is a location with a non-blank {@code pta}/{@code ptd} (passing points {@code PP},
-   * working-time-only, are excluded). Locations come as separate JSON keys (not one ordered list),
-   * so order is reconstructed as origin → intermediates → destination.
+   * Builds a {@link TrainScheduleDetails} from a {@code schedule} element, emitted only when the
+   * journey calls at an in-scope TIPLOC. Origin = first location, destination = last; a public
+   * calling point is a location with a non-blank {@code pta}/{@code ptd} (passing points {@code
+   * PP}, working-time-only, are excluded). Locations come as separate JSON keys (not one ordered
+   * list), so order is reconstructed as origin → intermediates → destination.
    */
   private static void collectFromSchedule(
-      JsonNode sc, Predicate<String> scope, List<ScheduleRecord> out) {
+      JsonNode sc, Predicate<String> scope, List<TrainScheduleDetails> out) {
     String rid = text(sc, "rid");
     if (rid.isEmpty()) {
       return;
@@ -223,7 +223,7 @@ public final class PushportParser {
             destTpl,
             originDep,
             destArr);
-    out.add(new ScheduleRecord(header, cps));
+    out.add(new TrainScheduleDetails(header, cps));
   }
 
   /** TIPLOC of a location: {@code tpl} (current schema) or the space-padded {@code ftl} (older). */
