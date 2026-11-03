@@ -14,7 +14,8 @@ Bus and train departures, live buses, and route maps for Melton Mowbray.
 [![React / TypeScript](https://img.shields.io/badge/React-TypeScript-12294f)](frontend/package.json)
 
 [Why TfM?](#why-tfm) · [Features](#features) · [Quick start](#quick-start) · [How it works](#how-it-works) ·
-[Engineering notes](#engineering-notes) · [Development](docs/development.md)
+[Technology choices](#technology-choices) · [Engineering notes](#engineering-notes) ·
+[Development](docs/development.md)
 
 </div>
 
@@ -112,9 +113,53 @@ live features show unavailable states. See the [environment example](deploy/.env
 
 ## How it works
 
-TfM brings several transport feeds into one local view. Bus timetables supply scheduled
-departures and route shapes; live vehicle reports add positions. Train boards come from
-RDM LDBWS, with optional Darwin Kafka schedules for journey and platform details.
+TfM brings several transport feeds into one local view. The table describes what the current
+application uses from each source; some feeds contain more information than TfM consumes.
+
+### What each source provides
+
+| Source | What TfM uses it for | How it reaches the app |
+| --- | --- | --- |
+| **Darwin LDBWS departures (REST)** | Train departure boards: scheduled and expected times, delays, cancellations, destinations, platforms, operators, coach information, and disruption messages where supplied. | Java requests a station board on demand and caches each station/row-count response for 30 seconds. |
+| **Darwin arrivals product (REST, optional)** | Arrival times and origins, joined with departures by service ID to form the combined station board. | A separate configured arrivals endpoint, also cached for 30 seconds. |
+| **Darwin Push Port (Kafka, optional)** | Schedules supply train calling points, headcodes, origins, and destinations. Platform and movement updates supply platform confirmation and whether a train has arrived but not departed. | A continuous subscription; schedules are persisted in PostgreSQL and live updates maintain application state. |
+| **BODS GTFS** | Scheduled bus departures, operating calendars, routes, calling points, and route shapes. | Regional ZIP downloads, streamed into PostgreSQL during timetable refreshes. |
+| **BODS SIRI-VM (optional)** | Reported bus positions and timestamps, used for map markers and matching vehicles to scheduled trips. | Java polls the live vehicle feed and publishes snapshots to subscribed browsers. |
+| **NaPTAN / NPTG** | Stop names, types, coordinates, rail station references, and the towns and localities used by search. | Reference-data downloads imported into PostgreSQL. |
+| **OpenFreeMap / OpenStreetMap** | The background map, its roads, buildings, and place labels. | MapLibre loads the hosted style and vector tiles in the browser. |
+| **OSRM (optional)** | Road geometry for bus routes without suitable GTFS shapes. | Java calls a separately managed routing server; the local stack does not require one. |
+
+The names above include a few transport and software acronyms:
+
+- **LDBWS** — Live Departure Boards Web Service, the API for requesting Darwin station boards.
+- **BODS** — Bus Open Data Service, the source of bus timetable and live vehicle data.
+- **GTFS** — General Transit Feed Specification, the format used for bus timetables, calendars,
+  stops, and route shapes.
+- **SIRI-VM** — Service Interface for Real Time Information — Vehicle Monitoring, the format used
+  for live bus position reports.
+- **NaPTAN** — National Public Transport Access Nodes, the national dataset of transport stops
+  and access points.
+- **NPTG** — National Public Transport Gazetteer, the dataset of towns, villages, and localities.
+- **OSRM** — Open Source Routing Machine, the optional road-routing engine.
+
+Darwin, Kafka, MapLibre, and OpenFreeMap are product or project names rather than acronyms.
+Darwin is the railway's passenger-information system; Kafka is the messaging platform carrying
+its push updates; MapLibre renders the map; OpenFreeMap provides the hosted map style and tiles.
+
+**REST boards and Kafka currently have different jobs.** The expected arrival/departure times
+shown on train boards come from REST. Kafka enriches calling points and platform information;
+its movement predictions do not currently update those board times.
+
+The service could be updated to get all train departure/arrival data from kafka but the simpler REST implementation is working well enough.
+
+The browser receives complete train-board snapshots from Java every 15 seconds while subscribed.
+That is a separate interval from the 30-second REST cache: a browser update can reuse a cached
+upstream response. Optional arrivals can be unavailable while departures continue to work.
+
+A fresh Kafka consumer without a valid committed offset starts at the latest messages. It does
+not automatically reconstruct a complete timetable, so calling-point and platform coverage can
+be incomplete until the relevant schedules arrive. See the
+[Darwin integration notes](docs/darwin-timetable.md).
 
 ```mermaid
 flowchart LR
@@ -131,6 +176,30 @@ API, with generated Java and TypeScript types.
 
 Route geometry uses GTFS shapes. A separately managed OSRM server can optionally provide road
 routing; it is not required by the local stack.
+
+## Technology choices
+
+These choices mostly reflect tools I enjoy using and where I am most comfortable working.
+
+| Technology | Why I chose it | Where to look |
+| --- | --- | --- |
+| **Java 25** | I like Java, and it is where I am most comfortable putting the transport logic. | [Application services](backend/tfm-server/src/main/java/uk/org/tfm/server/service) |
+| **Dagger** | I like explicit dependency wiring and finding missing or conflicting bindings at compile time rather than when the application starts. | [Application component and modules](backend/tfm-server/src/main/java/uk/org/tfm/server/dagger) |
+| **Protobuf / gRPC** | Personal preference. I like defining the API in a schema and generating the Java and TypeScript types from it. | [API contract](backend/tfm-proto/src/main/proto/tfm/v1) |
+| **React / TypeScript / MapLibre** | The UI makes the backend usable. I aim to keep transport rules in Java because I understand that side better; React handles the views, interaction, and map rendering. | [Frontend](frontend/src) |
+| **PostgreSQL / PostGIS** | Stores the timetable and reference data, with spatial queries for map geometry. | [Stores and importer](backend/tfm-storage-postgres/src/main/java/uk/org/tfm/storage/postgres) |
+| **Docker Compose / Envoy** | I like Docker for running the stack together. Envoy connects browser gRPC-Web requests to the Java gRPC server. | [Local stack](deploy/docker-compose.yml) and [proxy configuration](deploy/envoy.yaml) |
+| **JUnit / Testcontainers** | Personal preference for Java tests, with a real PostgreSQL/PostGIS instance for the import integration tests. | [Import correctness and memory tests](backend/tfm-server/src/test/java/uk/org/tfm/server/gtfs/GtfsImportRoundTripTest.java) |
+
+### Why not Spring Boot?
+
+Java and Dagger are a combination I enjoy working with, and I value Dagger's compile-time
+checks for dependency wiring. That is a preference, rather than a claim that Spring Boot
+would be unsuitable for this app.
+
+The Java backend is the focus of the project: feed integration, timetable ingestion, persistence,
+and the API. React provides the map, boards, and kiosk views, with browser-side animation to
+keep vehicle markers moving smoothly between updates.
 
 ## Engineering notes
 
