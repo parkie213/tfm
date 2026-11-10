@@ -42,7 +42,7 @@
       <plugin>
         <groupId>io.github.ascopes</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
-        <version>5.1.4</version>
+        <version>5.1.12</version>
         <configuration>
           <!-- v5 renamed protocVersion -> protoc and binaryMavenPlugins -> plugins (kind="binary-maven"). -->
           <protoc>${protobuf.version}</protoc>
